@@ -1,0 +1,2766 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MakerSpace BA · Planner</title>
+<style>
+:root{
+  --bg:#f5f4f0;--surface:#fff;--surface2:#f9f8f5;
+  --border:#e6e4dc;--border2:#d0cdc3;
+  --text:#1c1c1a;--text2:#5c5c58;--text3:#8f8f88;
+  --green:#2a5c2e;--green-d:#1e4220;--green-l:#e8f2e8;
+  --radius:10px;--radius-lg:14px;--hh:56px;--sw:264px;
+  --sh1:0 1px 2px rgba(28,28,26,.06);
+  --sh2:0 4px 14px rgba(28,28,26,.08);
+  --sh3:0 18px 48px rgba(28,28,26,.18);
+  --ring:0 0 0 3px rgba(42,92,46,.16);
+  --c-social-bg:#E6F1FB;--c-social:#0C447C;--c-social-br:#B5D4F4;
+  --c-story-bg:#FAEEDA;--c-story:#633806;--c-story-br:#FAC775;
+  --c-reel-bg:#FBEAF0;--c-reel:#72243E;--c-reel-br:#F4C0D1;
+  --c-mail-bg:#EAF3DE;--c-mail:#27500A;--c-mail-br:#C0DD97;
+  --c-news-bg:#EEEDFE;--c-news:#3C3489;--c-news-br:#CECBF6;
+  --c-urg-bg:#FAECE7;--c-urg:#4A1B0C;--c-urg-br:#F5C4B3;
+  --c-prep-bg:#F1EFE8;--c-prep:#444441;--c-prep-br:#D3D1C7;
+  --c-event-bg:#FFF3CD;--c-event:#7A5500;--c-event-br:#FFD966;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(42,92,46,.16)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none;box-shadow:var(--ring)}
+*{scrollbar-width:thin;scrollbar-color:#d4d0c6 transparent}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-thumb{background:#d8d4ca;border-radius:10px;border:3px solid var(--surface)}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+::-webkit-scrollbar-track{background:transparent}
+
+/* AUTH */
+.auth-screen{display:none;position:fixed;inset:0;background:radial-gradient(1200px 600px at 50% -10%,#eef3ea,var(--bg));z-index:1000;align-items:center;justify-content:center;padding:20px}
+.auth-screen.show{display:flex}
+.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:34px 32px;width:376px;max-width:95vw;box-shadow:var(--sh3)}
+.auth-logo{display:flex;align-items:center;gap:9px;margin-bottom:26px;justify-content:center}
+.auth-logo svg{width:26px;height:26px;color:var(--green)}
+.auth-logo span{font-size:16px;font-weight:700;color:var(--green);letter-spacing:-.2px}
+.auth-tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--bg);border-radius:11px;padding:4px}
+.auth-tab{flex:1;padding:8px;border-radius:8px;border:none;background:transparent;cursor:pointer;font-size:12.5px;font-weight:600;font-family:inherit;color:var(--text2);transition:all .12s}
+.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:var(--sh1)}
+.auth-fg{margin-bottom:13px}
+.auth-fg label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.auth-fg input{width:100%;font-size:13px;padding:10px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--surface2);color:var(--text);font-family:inherit;transition:all .12s}
+.auth-fg input:focus{outline:none;border-color:var(--green);background:#fff;box-shadow:var(--ring)}
+.auth-btn{width:100%;padding:11px;border-radius:10px;border:none;background:var(--green);color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px;transition:background .12s;box-shadow:var(--sh1)}
+.auth-btn:hover{background:var(--green-d)}
+.auth-err{font-size:12px;color:#A32D2D;margin-top:10px;text-align:center;min-height:18px}
+.auth-note{font-size:11px;color:var(--text3);text-align:center;margin-top:14px;line-height:1.5}
+
+/* HEADER */
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--hh);background:rgba(255,255,255,.9);backdrop-filter:saturate(1.3) blur(8px);-webkit-backdrop-filter:saturate(1.3) blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:10px;z-index:100;box-shadow:var(--sh1)}
+.logo{font-size:14px;font-weight:700;color:var(--green);display:flex;align-items:center;gap:7px;letter-spacing:-.3px}
+.logo svg{width:20px;height:20px}
+.cal-switcher{display:flex;gap:4px;margin-left:12px;margin-right:auto;flex-wrap:wrap}
+.cs-btn{padding:5px 11px;border-radius:999px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-size:11px;font-weight:500;font-family:inherit;display:flex;align-items:center;gap:6px;transition:all .12s;white-space:nowrap}
+.cs-btn:hover{background:var(--bg);border-color:var(--text3);color:var(--text)}
+.cs-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cs-add{padding:5px 10px;border-radius:999px;border:1px dashed var(--border2);background:transparent;color:var(--text3);cursor:pointer;font-size:11px;font-family:inherit;transition:all .12s}
+.cs-add:hover{color:var(--green);border-color:var(--green);background:var(--green-l)}
+.nav-tabs{display:flex;gap:3px;background:var(--bg);padding:3px;border-radius:11px;border:1px solid var(--border)}
+.nav-tab{padding:6px 13px;border-radius:8px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:all .12s}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{background:var(--surface);color:var(--green);box-shadow:var(--sh1)}
+.save-ind{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.save-ind.ok{color:#3B6D11}.save-ind.busy{color:#854F0B}
+.hbtn{font-size:12px;padding:6px 12px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;gap:5px;font-family:inherit;transition:all .12s;white-space:nowrap}
+.hbtn:hover{background:var(--bg);border-color:var(--text3)}
+.hbtn.pri{background:var(--green);color:#fff;border-color:transparent;font-weight:600;box-shadow:var(--sh1)}
+.hbtn.pri:hover{background:var(--green-d)}
+.user-btn{font-size:11px;color:var(--text3);background:none;border:1px solid var(--border2);border-radius:10px;padding:6px 11px;cursor:pointer;font-family:inherit;transition:all .12s}
+.user-btn:hover{background:var(--bg);color:var(--text)}
+
+/* LAYOUT */
+.app-body{display:flex;height:calc(100vh - var(--hh));margin-top:var(--hh)}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.main-area{flex:1;overflow-y:auto;padding:22px 24px}
+
+/* SIDEBAR */
+.sb-sec{padding:14px 14px 0}
+.sb-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:9px}
+.sb-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:13px}
+.sb-stat{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;transition:all .12s}
+.sb-stat:hover{border-color:var(--border2);box-shadow:var(--sh1)}
+.sb-stat .n{font-size:22px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-.6px}
+.sb-stat .l{font-size:10px;color:var(--text3);margin-top:4px;font-weight:500}
+.divider{height:1px;background:var(--border);margin:10px 0}
+.filter-section{padding:0 14px 12px}
+.filter-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.filter-chips{display:flex;flex-wrap:wrap;gap:5px}
+.fchip{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .12s}
+.fchip:hover{border-color:var(--green);color:var(--green);background:var(--green-l)}
+.fchip.active{background:var(--green);color:#fff;border-color:transparent;box-shadow:var(--sh1)}
+.f-label{font-size:10.5px;color:var(--text2);font-weight:600;margin:10px 0 5px}
+.seg{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:3px;border:1px solid var(--border)}
+.seg button{flex:1;border:none;background:transparent;border-radius:7px;padding:5px 2px;font-size:11px;font-family:inherit;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;transition:all .12s}
+.seg button:hover{color:var(--text)}
+.seg button.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:var(--sh1)}
+.seg .ev-swatch{width:9px;height:9px;border-radius:2px;background:#2F7BC4}
+.seg .tk-swatch{width:9px;height:9px;border-radius:50%;border:1.5px solid currentColor}
+.fchip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px!important;padding:4px 9px!important}
+.fchip .cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.filter-note{font-size:11px;color:var(--text3);margin:0 0 10px;font-style:italic}
+
+/* COLOR PALETTE */
+.swatch-btn{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border2);cursor:pointer;flex-shrink:0;padding:0}
+.swatch-btn:hover{box-shadow:0 0 0 2px var(--text3)}
+.pal-pop{position:fixed;z-index:600;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh3);padding:12px;width:236px}
+.pal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.pal-sw{width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;position:relative;padding:0;transition:transform .08s}
+.pal-sw:hover{transform:scale(1.12)}
+.pal-sw.sel::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700}
+.pal-name{font-size:11px;color:var(--text2);margin-top:8px;min-height:15px}
+.pal-custom{display:flex;align-items:center;gap:7px;margin-top:6px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text2)}
+.pal-custom input{width:28px;height:22px;border:1px solid var(--border2);border-radius:6px;padding:0;cursor:pointer;background:none}
+.cat-preview{font-size:11px;font-weight:600;border-radius:6px;padding:4px 8px;border:1px solid transparent;white-space:nowrap;min-width:78px;text-align:center;cursor:pointer}
+.ev-colors{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.ev-colors .pal-sw{width:22px;height:22px}
+.ev-colors .pal-sw.sel::after{font-size:11px}
+.ev-auto{font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid var(--border2);background:transparent;cursor:pointer;font-family:inherit;color:var(--text2);transition:all .12s}
+.ev-auto.sel{border-color:var(--green);background:var(--green-l);color:var(--green);font-weight:600}
+.edit-filter-btn{font-size:10.5px;color:var(--text3);background:none;border:none;cursor:pointer;padding:3px 7px;border-radius:7px;font-family:inherit;transition:all .12s}
+.edit-filter-btn:hover{color:var(--green);background:var(--green-l)}
+
+/* INBOX SIDEBAR */
+.inbox-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px}
+.inbox-badge{background:var(--green);color:#fff;font-size:10px;font-weight:700;border-radius:999px;padding:1px 7px}
+.inbox-list{padding:0 9px 9px}
+.inbox-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:5px;cursor:grab;user-select:none;transition:all .12s}
+.inbox-item:hover{border-color:var(--border2);box-shadow:var(--sh1)}
+.inbox-item.dragging{opacity:.3}
+.ib-cat{font-size:9px;font-weight:700;border-radius:5px;padding:1px 5px;display:inline-block;margin-bottom:3px;border:1px solid transparent}
+.ib-txt{font-size:11.5px;color:var(--text);line-height:1.4}
+.inbox-empty{font-size:11px;color:var(--text3);text-align:center;padding:14px 8px;font-style:italic}
+
+/* CALENDAR */
+.cal-controls{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.cal-controls h2{font-size:19px;font-weight:700;color:var(--text);margin-right:auto;letter-spacing:-.4px}
+.mnav{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:5px 11px;cursor:pointer;color:var(--text2);font-size:14px;line-height:1;transition:all .12s}
+.mnav:hover{background:var(--bg);color:var(--text);border-color:var(--text3)}
+.cal-grid{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface);box-shadow:var(--sh2)}
+.cal-dh-row{display:grid;grid-template-columns:repeat(7,1fr);background:var(--surface2);border-bottom:1px solid var(--border)}
+.cal-dh{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:8px 0}
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);position:relative;border-bottom:1px solid var(--border)}
+.cal-week:last-child{border-bottom:none}
+.cal-day{border-right:1px solid var(--border);padding:5px 4px 4px;vertical-align:top;min-height:110px;display:flex;flex-direction:column;transition:background .12s}
+.cal-day:last-child{border-right:none}
+.cal-day:hover{background:var(--surface2)}
+.cal-day.other-month{background:var(--surface2)}
+.cal-day.today{background:#eef6ee}
+.cal-day.today:hover{background:#eaf3ea}
+.cal-day.drop-over{background:#e4f0e4;outline:2px dashed var(--green);outline-offset:-2px}
+.dnum-row{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:2px;user-select:none;display:flex;align-items:center;justify-content:space-between;height:22px;flex-shrink:0}
+.dnum-circle{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%}
+.cal-day.today .dnum-circle{background:var(--green);color:#fff;font-weight:700}
+.day-add-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;line-height:1;padding:1px 3px;border-radius:6px;opacity:0;transition:opacity .1s}
+.cal-day:hover .day-add-btn{opacity:1}
+.day-add-btn:hover{color:var(--green);background:var(--green-l)}
+
+/* TASKS — light tinted chip with a round checkbox */
+.pill-wrap{position:relative;margin-bottom:2px;flex-shrink:0}
+.pill{font-size:10.5px;border-radius:5px;padding:2px 4px 2px 3px;display:flex;align-items:flex-start;gap:4px;cursor:grab;user-select:none;line-height:1.3;word-break:break-word;border:1px solid transparent;width:100%;transition:box-shadow .1s,filter .1s}
+.pill:hover{box-shadow:var(--sh1)}
+.pill:active{cursor:grabbing}
+.pill.done .pill-txt{text-decoration:line-through;opacity:.55}
+.pill.done{opacity:.6}
+.pill.dragging{opacity:.25}
+.pill-chk{width:11px;height:11px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:7px;line-height:1;opacity:.75;background:rgba(255,255,255,.6);padding:0;color:inherit}
+.pill-chk:hover{opacity:1;background:#fff}
+.pill.done .pill-chk{background:currentColor;opacity:1}
+.pill.done .pill-chk::after{content:'✓';color:#fff;font-weight:700}
+.pill-meta{font-size:9px;opacity:.75;white-space:nowrap;display:flex;gap:3px;align-items:center;flex-shrink:0}
+.pill-deadline{color:#A32D2D;font-weight:600;opacity:1}
+.pill-txt{flex:1;min-width:0}
+.pill-acts{display:none;gap:1px;flex-shrink:0}
+.pill-wrap:hover .pill-acts,.event-wrap:hover .pill-acts{display:flex}
+.pac{background:none;border:none;cursor:pointer;padding:1px 2px;border-radius:3px;font-size:10px;color:inherit;opacity:.6;line-height:1;font-family:inherit}
+.pac:hover{opacity:1}
+
+/* EVENTS — solid colored block, time first */
+.event-wrap{position:relative;margin-bottom:3px;flex-shrink:0}
+.event-pill{font-size:10.5px;font-weight:600;border-radius:7px;padding:3px 6px;display:flex;align-items:flex-start;gap:4px;cursor:pointer;user-select:none;line-height:1.3;word-break:break-word;width:100%;box-shadow:var(--sh1)}
+.event-pill:hover{filter:brightness(1.05);box-shadow:var(--sh2)}
+.event-pill.done{opacity:.45}
+.event-pill.done .event-pill-txt{text-decoration:line-through}
+.event-pill-txt{flex:1;min-width:0}
+.event-time{font-weight:700;white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums}
+.event-recur{font-size:9px;opacity:.8;flex-shrink:0}
+
+/* STRIPES (multi-day) */
+.stripe-container{display:flex;flex-direction:column;gap:2px;padding:0 0 2px;margin-top:auto}
+.stripe-spacer{height:17px;flex-shrink:0}
+.stripe{height:17px;border-radius:5px;font-size:10px;font-weight:600;display:flex;align-items:center;padding:0 6px;overflow:hidden;white-space:nowrap;cursor:pointer;border:1px solid transparent;width:100%;flex-shrink:0}
+.stripe.ev{font-weight:700;border:none}
+.stripe.stripe-start{border-radius:5px 0 0 5px}
+.stripe.stripe-end{border-radius:0 5px 5px 0}
+.stripe.stripe-mid{border-radius:0}
+.stripe.stripe-solo{border-radius:5px}
+.stripe:hover{filter:brightness(.95)}
+.stripe.done{opacity:.4;text-decoration:line-through}
+
+.p-social{background:var(--c-social-bg);color:var(--c-social);border-color:var(--c-social-br)}
+.p-story{background:var(--c-story-bg);color:var(--c-story);border-color:var(--c-story-br)}
+.p-reel{background:var(--c-reel-bg);color:var(--c-reel);border-color:var(--c-reel-br)}
+.p-mail{background:var(--c-mail-bg);color:var(--c-mail);border-color:var(--c-mail-br)}
+.p-newsletter{background:var(--c-news-bg);color:var(--c-news);border-color:var(--c-news-br)}
+.p-urgent{background:var(--c-urg-bg);color:var(--c-urg);border-color:var(--c-urg-br)}
+.p-prep{background:var(--c-prep-bg);color:var(--c-prep);border-color:var(--c-prep-br)}
+.p-event{background:var(--c-event-bg);color:var(--c-event);border-color:var(--c-event-br)}
+
+/* INBOX PAGE */
+.inbox-page{max-width:820px;margin:0 auto}
+.inbox-page-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.inbox-page-header h2{font-size:19px;font-weight:700;margin:0;letter-spacing:-.3px}
+.inbox-lists-tabs{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.il-tab{padding:5px 11px;border-radius:999px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-size:11px;font-family:inherit;display:flex;align-items:center;gap:6px;transition:all .12s;white-space:nowrap}
+.il-tab:hover{background:var(--bg);border-color:var(--text3)}
+.il-tab.active{font-weight:600;box-shadow:var(--sh1)}
+.il-tab .il-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.il-tab .il-count{font-size:10px;opacity:.6}
+.il-manage-btn{font-size:11px;color:var(--text3);background:none;border:1px dashed var(--border2);border-radius:999px;padding:5px 11px;cursor:pointer;white-space:nowrap;transition:all .12s}
+.il-manage-btn:hover{color:var(--green);border-color:var(--green);background:var(--green-l)}
+.inbox-section{margin-bottom:24px}
+.inbox-section-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.inbox-section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.inbox-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 15px;margin-bottom:7px;display:flex;align-items:flex-start;gap:11px;transition:all .12s}
+.inbox-card:hover{border-color:var(--border2);box-shadow:var(--sh1)}
+.ic-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;cursor:pointer;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .12s;font-size:10px}
+.ic-check:hover{border-color:var(--green)}
+.ic-check.done{background:var(--green);border-color:var(--green);color:#fff}
+.ic-body{flex:1;min-width:0}
+.ic-top{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
+.ic-cat{font-size:9px;font-weight:700;border-radius:5px;padding:1px 6px;border:1px solid transparent}
+.ic-txt{font-size:12.5px;color:var(--text);flex:1}
+.ic-txt.done{text-decoration:line-through;opacity:.45}
+.ic-meta{font-size:10px;color:var(--text3);display:flex;gap:8px;flex-wrap:wrap}
+.ic-deadline-warn{color:#A32D2D;font-weight:600}
+.ic-acts{display:flex;gap:5px;flex-shrink:0}
+.ic-btn{background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;padding:4px 8px;font-size:11px;color:var(--text2);font-family:inherit;transition:all .12s}
+.ic-btn:hover{background:var(--bg);border-color:var(--text3)}
+.ic-btn.red{color:#A32D2D;border-color:#F09595}
+.ic-btn.red:hover{background:#FAECE7}
+.sec-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px}
+
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(28,28,26,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:300;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex;animation:ovIn .14s ease-out}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border-radius:18px;border:1px solid var(--border);padding:22px;width:400px;max-width:96vw;box-shadow:var(--sh3);max-height:90vh;overflow-y:auto;animation:mdIn .18s cubic-bezier(.2,.8,.2,1)}
+@keyframes mdIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+.modal h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:-.2px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.fg{margin-bottom:11px}
+.fg label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;font-size:12.5px;padding:8px 10px;border:1px solid var(--border2);border-radius:9px;background:var(--surface2);color:var(--text);font-family:inherit;transition:all .12s}
+.fg textarea{height:58px;resize:vertical}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--green);background:#fff;box-shadow:var(--ring)}
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:11px;cursor:pointer;user-select:none}
+.toggle-row input{accent-color:var(--green);width:15px;height:15px}
+.mbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.mb{font-size:12.5px;padding:8px 15px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;font-weight:500;transition:all .12s}
+.mb:hover{background:var(--bg);border-color:var(--text3)}
+.mb.pri{background:var(--green);color:#fff;border-color:transparent;box-shadow:var(--sh1)}
+.mb.pri:hover{background:var(--green-d)}
+.mb.del{color:#A32D2D;border-color:#F09595}
+.mb.del:hover{background:#FAECE7}
+.type-toggle{display:flex;gap:5px;margin-bottom:14px;background:var(--bg);padding:4px;border-radius:11px;border:1px solid var(--border)}
+.tt-btn{flex:1;padding:7px;border-radius:8px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-size:11.5px;font-weight:600;font-family:inherit;text-align:center;transition:all .12s}
+.tt-btn.active{background:var(--surface);color:var(--green);box-shadow:var(--sh1)}
+.modal-section{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 9px;padding-top:12px;border-top:1px solid var(--border)}
+
+/* FILTER / CAL / LIST EDITORS */
+.edit-list{max-height:300px;overflow-y:auto;margin-bottom:12px}
+.edit-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.edit-item:last-child{border-bottom:none}
+.ei-name{flex:1;font-size:12.5px;padding:6px 9px;border:1px solid var(--border2);border-radius:8px;background:var(--surface2);color:var(--text);font-family:inherit;transition:all .12s}
+.ei-name:focus{outline:none;border-color:var(--green);box-shadow:var(--ring)}
+.ei-icon{width:40px;font-size:13px;padding:6px 5px;border:1px solid var(--border2);border-radius:8px;background:var(--surface2);color:var(--text);font-family:inherit;text-align:center}
+.ei-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;padding:3px 6px;border-radius:7px;transition:all .12s}
+.ei-del:hover{color:#A32D2D;background:#FAECE7}
+
+/* LOADING / TOAST */
+.loading-screen{display:none;position:fixed;inset:0;background:radial-gradient(1000px 500px at 50% -10%,#eef3ea,var(--bg));z-index:900;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading-screen.show{display:flex}
+.loading-logo{display:flex;align-items:center;gap:9px;color:var(--green);font-weight:700;font-size:15px;letter-spacing:-.2px;margin-bottom:2px}
+.loading-logo svg{width:22px;height:22px}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:13px;color:var(--text2);font-weight:500}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:#fff;font-size:12.5px;font-weight:500;padding:10px 16px;border-radius:12px;z-index:500;opacity:0;transform:translateY(8px);transition:all .22s;pointer-events:none;box-shadow:var(--sh3)}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* INBOX DROP ZONE (drag from calendar back to inbox) */
+.inbox-drop{margin:0 9px 9px;border-radius:10px;min-height:90px;transition:background .1s}
+.inbox-drop-hint{display:none;font-size:11px;color:var(--green);text-align:center;padding:10px 8px 4px;font-weight:600}
+body.drag-from-cal .inbox-drop{outline:2px dashed var(--border2);outline-offset:-2px;background:var(--surface2)}
+body.drag-from-cal .inbox-drop-hint{display:block}
+.inbox-drop.drop-over{outline-color:var(--green)!important;background:#e4f0e4!important}
+.inbox-item .ib-meta{font-size:9px;color:var(--text3);margin-top:2px}
+.pill-sub{font-size:8px;opacity:.75;white-space:nowrap;flex-shrink:0}
+.cal-controls .today-btn{font-size:11px;padding:5px 11px}
+
+/* DETAIL DRAWER */
+.drawer-bg{display:none;position:fixed;inset:0;background:rgba(28,28,26,.22);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:250}
+.drawer-bg.open{display:block;animation:ovIn .14s ease-out}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:412px;max-width:100vw;background:var(--surface);border-left:1px solid var(--border);box-shadow:-16px 0 48px rgba(28,28,26,.16);z-index:260;transform:translateX(105%);transition:transform .2s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.open{transform:translateX(0)}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.dr-head{display:flex;align-items:center;gap:8px;padding:16px 18px 0;flex-wrap:wrap}
+.dr-close{margin-left:auto;background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;padding:2px 7px;border-radius:7px;line-height:1;transition:all .12s}
+.dr-close:hover{background:var(--bg);color:var(--text)}
+.dr-body{flex:1;overflow-y:auto;padding:12px 18px 18px}
+.dr-title{width:100%;font-size:17px;font-weight:700;color:var(--text);border:1px solid transparent;border-radius:8px;padding:5px 7px;margin-left:-7px;font-family:inherit;background:transparent;resize:none;line-height:1.35;letter-spacing:-.2px}
+.dr-title:hover{border-color:var(--border);background:var(--surface2)}
+.dr-title:focus{outline:none;border-color:var(--green);background:#fff;box-shadow:var(--ring)}
+.dr-title.done{text-decoration:line-through;opacity:.5}
+.dr-meta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.dr-chip{font-size:11px;color:var(--text2);background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:3px 9px}
+.dr-chip.warn{background:#FAECE7;color:#A32D2D;border-color:#F5C4B3}
+.dr-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 7px;display:flex;align-items:center;gap:8px}
+.dr-desc{width:100%;min-height:92px;font-size:12.5px;line-height:1.55;padding:10px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--surface2);color:var(--text);font-family:inherit;resize:vertical;transition:all .12s}
+.dr-desc:focus{outline:none;border-color:var(--green);background:#fff;box-shadow:var(--ring)}
+.dr-progress{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;text-transform:none}
+.dr-progress span{display:block;height:100%;background:var(--green);transition:width .15s}
+.dr-count{text-transform:none;letter-spacing:0;font-weight:600}
+.sub-item{display:flex;align-items:center;gap:8px;padding:4px 0;border-radius:6px}
+.sub-item:hover .sub-del{opacity:1}
+.sub-check{width:17px;height:17px;border-radius:6px;border:1.5px solid var(--border2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;background:#fff;padding:0;color:#fff;transition:all .12s}
+.sub-check:hover{border-color:var(--green)}
+.sub-check.done{background:var(--green);border-color:var(--green)}
+.sub-txt{flex:1;font-size:12.5px;border:1px solid transparent;border-radius:6px;padding:4px 6px;background:transparent;font-family:inherit;color:var(--text)}
+.sub-txt:hover{border-color:var(--border)}
+.sub-txt:focus{outline:none;border-color:var(--green);background:#fff}
+.sub-txt.done{text-decoration:line-through;color:var(--text3)}
+.sub-del{opacity:0;background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px}
+.sub-del:hover{color:#A32D2D;background:#FAECE7}
+.sub-del:focus{opacity:1}
+.sub-add{display:flex;align-items:center;gap:8px;margin-top:5px}
+.sub-add input{flex:1;font-size:12.5px;padding:8px 10px;border:1px dashed var(--border2);border-radius:10px;background:transparent;font-family:inherit;color:var(--text)}
+.sub-add input:focus{outline:none;border-style:solid;border-color:var(--green);background:#fff}
+.dr-note{font-size:11px;color:#854F0B;background:#FAEEDA;border:1px solid var(--c-story-br);border-radius:10px;padding:9px 11px;margin-top:12px;line-height:1.5}
+.dr-foot{border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:7px;flex-wrap:wrap;background:var(--surface2)}
+.dr-foot .mb{font-size:11.5px}
+.dr-recur-note{font-size:11px;color:var(--text3);margin-top:4px}
+.clickable{cursor:pointer}
+.ic-txt.clickable:hover{text-decoration:underline;text-decoration-color:var(--border2)}
+
+/* ── VIEW SWITCHER (Mesiac / Týždeň / Zoznam) ── */
+.view-seg{display:inline-flex;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px;margin:0 6px}
+.view-seg button{border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--text2);cursor:pointer;padding:5px 13px;border-radius:999px;line-height:1;transition:background .12s,color .12s,box-shadow .12s}
+.view-seg button:hover{color:var(--text)}
+.view-seg button.on{background:var(--surface);color:var(--green-d);box-shadow:var(--sh1)}
+
+/* reveal event hover actions (month + week + list) */
+.event-acts{display:none;gap:1px;flex-shrink:0}
+.event-wrap:hover .event-acts{display:flex}
+
+/* ── WEEK VIEW ── */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:start}
+.week-col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;min-height:420px}
+.week-col.today{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
+.week-colhdr{display:flex;align-items:center;gap:5px;padding:8px 9px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.week-colhdr.today{background:var(--green-l)}
+.week-dn{font-weight:700;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.03em}
+.week-colhdr.today .week-dn{color:var(--green-d)}
+.week-dd{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
+.week-colhdr .day-add-btn{margin-left:auto;opacity:1;font-size:15px}
+.week-items{padding:8px;display:flex;flex-direction:column;gap:4px;flex:1}
+.week-items .pill,.week-items .event-pill{font-size:11.5px;flex-wrap:wrap}
+.week-items .pill-txt,.week-items .event-pill-txt{flex:1 1 100%}
+.week-empty{color:var(--text3);font-size:12px;text-align:center;padding:14px 0;opacity:.6}
+
+/* ── LIST / AGENDA VIEW ── */
+.agenda{display:flex;flex-direction:column;gap:2px;max-width:760px}
+.agenda-day{display:flex;gap:14px;padding:12px 4px;border-bottom:1px solid var(--border)}
+.agenda-day:last-child{border-bottom:none}
+.agenda-date{display:flex;align-items:center;gap:9px;min-width:118px;flex-shrink:0;padding-top:2px}
+.agenda-dnum{font-size:26px;font-weight:800;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
+.agenda-dinfo{font-size:11px;color:var(--text3);line-height:1.35}
+.agenda-dinfo b{color:var(--text2);font-size:12px}
+.agenda-date.today .agenda-dnum{color:var(--green)}
+.agenda-date.today{background:var(--green-l);border-radius:var(--radius);padding:6px 10px;margin:-6px 0}
+.agenda-items{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.agenda-items .pill,.agenda-items .event-pill{font-size:12.5px;flex-wrap:wrap}
+.agenda-items .pill-txt,.agenda-items .event-pill-txt{flex:1 1 auto}
+.list-empty{color:var(--text3);text-align:center;padding:48px 0;font-size:13.5px}
+@media(max-width:900px){.week-grid{grid-template-columns:1fr;gap:6px}.week-col{min-height:0}}
+
+/* ── CAMPAIGNS (Kampane) ── */
+#view-campaigns{height:100%;overflow:auto}
+.camp-wrap{padding:22px 26px 40px;max-width:1180px;margin:0 auto}
+.camp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.camp-head h2,.camp-detail-title h2{font-size:20px;font-weight:800;color:var(--text);margin:0}
+.camp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:16px}
+.camp-group{margin-bottom:18px}
+.camp-group-hdr{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;cursor:pointer;font-family:inherit;padding:6px 2px;margin-bottom:10px;border-bottom:1px solid var(--border)}
+.camp-group-caret{color:var(--text3);font-size:11px;width:12px}
+.camp-group-name{font-size:14px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:.03em}
+.camp-group-count{background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:11px;font-weight:600;border-radius:99px;padding:1px 9px}
+.camp-group-hdr:hover .camp-group-name{color:var(--green-d)}
+.camp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;box-shadow:var(--sh1);transition:box-shadow .14s,transform .14s}
+.camp-card:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.camp-card-top{height:7px;background:var(--cc,#2E6B3A)}
+.camp-card-body{padding:14px 15px 15px}
+.camp-card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px}
+.camp-card-desc{font-size:12px;color:var(--text2);line-height:1.45;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.camp-card-dates{font-size:11px;color:var(--text3);margin-bottom:10px}
+.camp-prog{height:7px;border-radius:99px;background:var(--border);overflow:hidden;margin-bottom:6px}
+.camp-prog span{display:block;height:100%;background:var(--cc,var(--green));border-radius:99px;transition:width .3s}
+.camp-prog.big{height:10px}
+.camp-card-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-weight:600}
+.camp-empty{text-align:center;padding:70px 20px;color:var(--text2)}
+.camp-empty-ic{font-size:48px;margin-bottom:12px}
+.camp-empty p{font-size:14px;line-height:1.6;margin-bottom:18px}
+/* setup card */
+.camp-setup{max-width:640px;margin:26px auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px 30px;box-shadow:var(--sh1)}
+.camp-setup-ic{font-size:40px;text-align:center}
+.camp-setup h2{font-size:20px;font-weight:800;text-align:center;margin:6px 0 10px}
+.camp-setup p{font-size:13.5px;color:var(--text2);line-height:1.6;text-align:center}
+.camp-steps{font-size:13px;color:var(--text2);line-height:1.7;margin:16px 0;padding-left:22px}
+.camp-steps li{margin-bottom:4px}
+.camp-sql{background:var(--green-d);color:#eaf5ea;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;line-height:1.5;padding:14px 16px;border-radius:10px;overflow:auto;white-space:pre;max-height:260px}
+.camp-setup-btns{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+/* detail */
+.camp-detail-head{margin-bottom:10px}
+.camp-back{background:none;border:none;color:var(--text2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:6px 2px;border-radius:7px}
+.camp-back:hover{color:var(--green)}
+.camp-detail-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.camp-dot{width:14px;height:14px;border-radius:50%;background:var(--cc,var(--green));flex-shrink:0}
+.camp-dt-range{font-size:12px;color:var(--text3);font-weight:600}
+.camp-detail-desc{font-size:13px;color:var(--text2);line-height:1.55;margin:0 0 14px;max-width:760px}
+.camp-detail-prog{display:flex;align-items:center;gap:12px;margin-bottom:20px;max-width:520px}
+.camp-detail-prog .camp-prog{flex:1;margin:0}
+.camp-detail-progtxt{font-size:12px;color:var(--text2);font-weight:600;white-space:nowrap}
+.camp-detail-acts{margin-left:auto;display:flex;gap:7px}
+/* project sub-view switch */
+.proj-seg{margin:0 0 14px}
+.view-seg.mini{padding:2px}
+.view-seg.mini button{font-size:12px;padding:4px 11px}
+/* project notes – full editor */
+.proj-notes-full{margin-bottom:10px}
+.proj-notes-bar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-bottom:10px}
+.proj-notes-hint{font-size:11px;font-weight:500;color:var(--text3)}
+.proj-notes-ta{width:100%;min-height:58vh;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.7;padding:16px 18px;border:1px solid var(--border2);border-radius:var(--radius-lg);background:var(--surface);color:var(--text);box-shadow:var(--sh1)}
+.proj-notes-ta:focus{outline:none;border-color:var(--green);box-shadow:var(--ring)}
+.proj-notes-setup{max-width:860px;margin-bottom:22px;font-size:13px;color:var(--text2);background:var(--surface2);border:1px dashed var(--border2);border-radius:var(--radius);padding:14px 16px}
+/* notes markdown preview */
+.md-preview{min-height:58vh;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--sh1);padding:22px 26px;font-size:14px;line-height:1.7;color:var(--text);max-width:880px}
+.md-preview h1,.md-preview h2,.md-preview h3,.md-preview h4{line-height:1.3;margin:18px 0 8px;font-weight:800;color:var(--text)}
+.md-preview h1{font-size:23px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.md-preview h2{font-size:19px}
+.md-preview h3{font-size:16px}
+.md-preview h4{font-size:14px}
+.md-preview h1:first-child,.md-preview h2:first-child,.md-preview h3:first-child{margin-top:0}
+.md-preview p{margin:0 0 10px}
+.md-preview ul,.md-preview ol{margin:0 0 10px;padding-left:24px}
+.md-preview li{margin:3px 0}
+.md-preview ul.md-task{list-style:none;padding-left:4px}
+.md-preview ul.md-task li{display:flex;gap:7px;align-items:baseline}
+.md-preview ul.md-task li.done{color:var(--text3);text-decoration:line-through}
+.md-preview .md-box{font-size:15px;line-height:1}
+.md-preview a{color:var(--green);text-decoration:underline}
+.md-preview .wikilink{color:#7E5BC2;background:#f1ecfa;border-radius:4px;padding:0 4px;font-weight:600}
+.md-preview code{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:1px 5px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.md-preview pre{background:var(--green-d);color:#eaf5ea;border-radius:10px;padding:13px 15px;overflow:auto;font-size:12.5px;line-height:1.55;margin:0 0 12px}
+.md-preview pre code{background:none;border:none;color:inherit;padding:0}
+.md-preview blockquote{border-left:3px solid var(--border2);margin:0 0 10px;padding:2px 0 2px 14px;color:var(--text2)}
+.md-preview .md-empty{color:var(--text3)}
+.md-preview a.wikilink{cursor:pointer;text-decoration:none}
+.md-preview a.wikilink:hover{text-decoration:underline}
+/* notes app: list + editor */
+.notes-app{display:flex;gap:16px;align-items:stretch;min-height:60vh}
+.notes-list{flex:0 0 232px;display:flex;flex-direction:column;gap:8px}
+.notes-new{background:var(--green);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:9px 12px;border-radius:var(--radius);box-shadow:var(--sh1)}
+.notes-new:hover{background:var(--green-d)}
+.notes-items{display:flex;flex-direction:column;gap:4px;overflow:auto}
+.notes-item{text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:13px;color:var(--text2);cursor:pointer;transition:background .1s,border-color .1s;display:block;width:100%}
+.notes-item:hover{background:var(--surface2)}
+.notes-item.on{background:var(--green-l);border-color:var(--green);color:var(--green-d);font-weight:700}
+.notes-item-ttl{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notes-list-empty{color:var(--text3);font-size:12.5px;padding:8px 4px}
+.notes-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.notes-main-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.note-title{flex:1;min-width:140px;font-size:17px;font-weight:700;font-family:inherit;color:var(--text);background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:9px 13px}
+.note-title:focus{outline:none;border-color:var(--green);box-shadow:var(--ring)}
+.note-del{color:#A32D2D}
+.note-body{flex:1;width:100%;min-height:50vh;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.7;padding:16px 18px;border:1px solid var(--border2);border-radius:var(--radius-lg);background:var(--surface);color:var(--text);box-shadow:var(--sh1)}
+.note-body:focus{outline:none;border-color:var(--green);box-shadow:var(--ring)}
+.notes-main .md-preview{flex:1;min-height:50vh;margin:0}
+.notes-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.notes-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--text2);gap:10px;padding:40px 20px;border:1px dashed var(--border2);border-radius:var(--radius-lg)}
+.notes-empty-ic{font-size:40px}
+.notes-empty p{font-size:13.5px;line-height:1.6}
+@media(max-width:760px){.notes-app{flex-direction:column}.notes-list{flex:none}.notes-items{max-height:160px}}
+/* kanban */
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start}
+.kan-col{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);display:flex;flex-direction:column;min-height:180px;transition:background .12s,box-shadow .12s}
+.kan-col.over{background:var(--green-l);box-shadow:inset 0 0 0 2px var(--green)}
+.kan-colhdr{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;font-size:13px;font-weight:700;color:var(--text);border-bottom:1px solid var(--border)}
+.kan-count{background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:11px;border-radius:99px;padding:1px 8px}
+.kan-body{padding:10px;display:flex;flex-direction:column;gap:8px}
+.kan-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--ac,#888);border-radius:9px;padding:9px 11px;cursor:grab;box-shadow:var(--sh1);transition:box-shadow .1s,transform .06s}
+.kan-card:hover{box-shadow:var(--sh2)}
+.kan-card:active{cursor:grabbing}
+.kan-card.done{opacity:.55}
+.kan-card.done .kan-card-txt{text-decoration:line-through}
+.kan-card-txt{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.35;word-break:break-word}
+.kan-card-meta{font-size:10.5px;color:var(--text3);margin-top:4px}
+.kan-add{background:none;border:1px dashed var(--border2);color:var(--text3);font-family:inherit;font-size:12px;cursor:pointer;padding:7px;border-radius:8px;transition:all .12s}
+.kan-add:hover{color:var(--green);border-color:var(--green);background:var(--green-l)}
+.dr-proj{width:100%;font-size:13px;padding:8px 10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);font-family:inherit;color:var(--text);cursor:pointer}
+.dr-proj:focus{outline:none;border-color:var(--green)}
+/* ── CONTENT (Obsah) ── */
+.content-wrap{max-width:1180px;margin:0 auto;padding:4px 2px 20px}
+.content-head{display:flex;align-items:center;gap:14px;margin:4px 0 2px}
+.content-head h2{font-size:20px;margin:0;flex:0 0 auto}
+.content-head-acts{margin-left:auto;display:flex;align-items:center;gap:10px}
+.content-filter{font-size:13px;padding:7px 10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);font-family:inherit;color:var(--text);cursor:pointer}
+.content-filter:focus{outline:none;border-color:var(--green)}
+.content-intro{font-size:12.5px;color:var(--text3);margin:2px 0 14px}
+.content-board{display:flex;gap:14px;align-items:flex-start;overflow-x:auto;padding-bottom:8px}
+.content-board .kan-col{flex:1 0 190px;min-width:190px;border-top:3px solid var(--cc,var(--border))}
+.content-card .kan-card-txt{font-size:13px}
+.content-card-text{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.4;white-space:pre-wrap;word-break:break-word}
+.content-card-foot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
+.content-card-foot:empty{display:none}
+.content-proj{font-size:10px;font-weight:600;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--pc,#888);border-radius:5px;padding:1px 6px}
+.content-tstatus{font-size:10px;font-weight:600;color:var(--tc,#666);background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:1px 6px}
+.content-drive{font-size:10.5px;font-weight:600;color:var(--blue,#2F7BC4);text-decoration:none;border:1px solid var(--border);border-radius:5px;padding:1px 6px;background:var(--surface2)}
+.content-drive:hover{text-decoration:underline}
+.cst-dot{display:inline-block;width:7px;height:7px;border-radius:99px;background:#888;vertical-align:middle;margin-right:2px}
+/* content fields in the drawer */
+.dr-cstatus{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px}
+.dr-cst{font-size:11.5px;font-family:inherit;cursor:pointer;background:var(--surface2);border:1px solid var(--border2);border-radius:99px;padding:4px 10px;color:var(--text2);transition:all .12s}
+.dr-cst:hover{border-color:var(--sc)}
+.dr-cst.on{background:var(--sc);border-color:var(--sc);color:#fff;font-weight:600}
+.dr-input{width:100%;font-size:13px;padding:8px 10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);font-family:inherit;color:var(--text)}
+.dr-input:focus{outline:none;border-color:var(--green)}
+.dr-drive-open{display:inline-block;font-size:12px;color:var(--blue,#2F7BC4);text-decoration:none;margin:5px 0 2px}
+.dr-drive-open:hover{text-decoration:underline}
+@media(max-width:820px){.kanban{grid-template-columns:1fr}.camp-wrap{padding:16px}}
+</style>
+</head>
+<body>
+
+<div class="loading-screen show" id="loading-screen">
+  <div class="loading-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>MakerSpace BA · Planner</span>
+  </div>
+  <div class="spinner"></div>
+  <div class="loading-txt" id="loading-txt">Načítavam...</div>
+</div>
+
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>MakerSpace BA · Planner</span>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="authTab('login')" id="tab-login">Prihlásiť sa</button>
+      <button class="auth-tab" onclick="authTab('register')" id="tab-register">Registrácia</button>
+    </div>
+    <div class="auth-fg"><label>Email</label><input type="email" id="auth-email" placeholder="tvoj@email.sk" autocomplete="email"></div>
+    <div class="auth-fg"><label>Heslo</label><input type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()"></div>
+    <button class="auth-btn" onclick="doAuth()" id="auth-submit-btn">Prihlásiť sa</button>
+    <div class="auth-err" id="auth-err"></div>
+    <div class="auth-note" id="auth-note">Tvoje dáta sú chránené a viditeľné len pre teba.</div>
+  </div>
+</div>
+
+<header class="hdr" id="main-hdr" style="display:none">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    MakerSpace BA
+  </div>
+  <div class="cal-switcher" id="cal-switcher"></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-view="calendar" onclick="switchView('calendar')">📅 Kalendár</button>
+    <button class="nav-tab" data-view="inbox" onclick="switchView('inbox')">📥 Inbox</button>
+    <button class="nav-tab" data-view="campaigns" onclick="switchView('campaigns')">📂 Projekty</button>
+    <button class="nav-tab" data-view="content" onclick="switchView('content')">📸 Obsah</button>
+  </div>
+  <span class="save-ind" id="save-ind">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+    <span id="save-txt">pripojené</span>
+  </span>
+  <button class="hbtn pri" onclick="openItemModal()">+ Pridať</button>
+  <button class="user-btn" onclick="doLogout()">Odhlásiť</button>
+</header>
+
+<div class="app-body" id="main-body" style="display:none">
+  <aside class="sidebar">
+    <div class="sb-sec">
+      <div class="sb-title">Štatistiky</div>
+      <div class="sb-stats">
+        <div class="sb-stat"><div class="n" id="s-total">0</div><div class="l">Spolu</div></div>
+        <div class="sb-stat"><div class="n" id="s-done">0</div><div class="l">Hotovo</div></div>
+        <div class="sb-stat"><div class="n" id="s-left">0</div><div class="l">Zostáva</div></div>
+        <div class="sb-stat"><div class="n" id="s-inbox">0</div><div class="l">Inbox</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="filter-section">
+      <div class="filter-header">
+        <span class="sb-title" style="margin-bottom:0">Filtre</span>
+        <button class="edit-filter-btn" id="filter-clear" onclick="clearFilters()" style="display:none">Zrušiť filtre</button>
+      </div>
+      <div class="f-label">Zobraziť</div>
+      <div class="seg" id="seg-type"></div>
+      <div class="f-label">Stav</div>
+      <div class="seg" id="seg-status"></div>
+      <div class="f-label" style="display:flex;justify-content:space-between;align-items:center">Druh úloh
+        <button class="edit-filter-btn" onclick="openFilterEditor()">✎ Upraviť druhy</button></div>
+      <div class="filter-chips" id="filter-chips"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="inbox-hdr">
+      <div style="display:flex;align-items:center;gap:5px">
+        <span class="sb-title" style="margin-bottom:0">Inbox</span>
+        <span class="inbox-badge" id="inbox-badge">0</span>
+      </div>
+      <button class="hbtn" style="font-size:10px;padding:3px 7px" onclick="openItemModal(null,true)">+ Pridať</button>
+    </div>
+    <div class="inbox-drop" id="inbox-drop" ondragover="inboxDov(event)" ondragleave="inboxDlv(event)" ondrop="dropToInbox(event)">
+      <div class="inbox-drop-hint">Pusti sem – úloha sa vráti do inboxu</div>
+      <div class="inbox-list" id="inbox-list"></div>
+    </div>
+    <div style="padding:8px 12px 14px">
+      <button class="hbtn" onclick="doReset()" style="width:100%;justify-content:center;color:var(--text3);font-size:11px">↺ Obnoviť predvolené</button>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <div id="view-calendar">
+      <div class="cal-controls">
+        <button class="mnav" onclick="prevPeriod()">‹</button>
+        <h2 id="month-label"></h2>
+        <div class="view-seg" id="calview-seg">
+          <button id="cv-month" onclick="setCalView('month')">Mesiac</button>
+          <button id="cv-week" onclick="setCalView('week')">Týždeň</button>
+          <button id="cv-list" onclick="setCalView('list')">Zoznam</button>
+        </div>
+        <button class="mnav today-btn" onclick="goToday()">Dnes</button>
+        <button class="mnav" onclick="nextPeriod()">›</button>
+      </div>
+      <div id="cal-month-view">
+        <div class="cal-grid">
+          <div class="cal-dh-row">
+            <div class="cal-dh">Po</div><div class="cal-dh">Ut</div><div class="cal-dh">St</div>
+            <div class="cal-dh">Št</div><div class="cal-dh">Pi</div><div class="cal-dh">So</div><div class="cal-dh">Ne</div>
+          </div>
+          <div class="cal-weeks" id="cal-weeks"></div>
+        </div>
+      </div>
+      <div id="cal-week-view" style="display:none"></div>
+      <div id="cal-list-view" style="display:none"></div>
+    </div>
+    <div id="view-inbox" style="display:none">
+      <div class="inbox-page">
+        <div class="inbox-page-header">
+          <h2>📥 Inbox</h2>
+          <div class="inbox-lists-tabs" id="inbox-lists-tabs"></div>
+          <button class="il-manage-btn" onclick="openListManager()">⚙ Zoznamy</button>
+        </div>
+        <div id="inbox-page-content"></div>
+      </div>
+    </div>
+    <div id="view-campaigns" style="display:none"></div>
+    <div id="view-content" style="display:none"></div>
+  </main>
+</div>
+
+<!-- ITEM MODAL -->
+<div class="overlay" id="item-overlay">
+  <div class="modal">
+    <h3 id="im-title">Nová položka</h3>
+    <div class="type-toggle">
+      <button class="tt-btn active" onclick="setType('task')" id="tt-task">✓ Úloha</button>
+      <button class="tt-btn" onclick="setType('event')" id="tt-event">📅 Event</button>
+      <button class="tt-btn" onclick="setType('content')" id="tt-content">📸 Obsah</button>
+    </div>
+    <div class="fg">
+      <label id="im-txt-label">Text</label>
+      <textarea id="im-txt" placeholder="Napr. Post: Základy šperkarstva..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="fg" id="im-cat-wrap">
+        <label>Kategória</label>
+        <select id="im-cat"></select>
+      </div>
+      <div class="fg">
+        <label>Kalendár</label>
+        <select id="im-cal"></select>
+      </div>
+    </div>
+    <div class="form-row" id="im-proj-row" style="display:none">
+      <div class="fg">
+        <label>Projekt</label>
+        <select id="im-proj"></select>
+      </div>
+    </div>
+
+    <!-- TASK fields -->
+    <div id="im-task-fields">
+      <div class="fg" id="im-inbox-list-wrap">
+        <label>Zoznam (inbox)</label>
+        <select id="im-inbox-list"></select>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Dátum</label>
+          <input type="date" id="im-date">
+        </div>
+        <div class="fg">
+          <label>Čas</label>
+          <input type="time" id="im-time" placeholder="napr. 10:00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Deadline</label>
+          <input type="date" id="im-deadline">
+        </div>
+        <div class="fg" id="im-enddate-wrap" style="display:none">
+          <label>Dátum konca (stripe)</label>
+          <input type="date" id="im-enddate">
+        </div>
+      </div>
+      <label class="toggle-row">
+        <input type="checkbox" id="im-multi" onchange="onMultiChange()">
+        <span style="font-size:12px;color:var(--text2)">Viacdňová úloha – stripe</span>
+      </label>
+    </div>
+
+    <!-- EVENT fields -->
+    <div id="im-event-fields" style="display:none">
+      <div class="form-row">
+        <div class="fg">
+          <label>Dátum začiatku</label>
+          <input type="date" id="im-ev-date">
+        </div>
+        <div class="fg">
+          <label>Čas začiatku</label>
+          <input type="time" id="im-ev-time">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Dátum konca</label>
+          <input type="date" id="im-ev-enddate">
+        </div>
+        <div class="fg">
+          <label>Čas konca</label>
+          <input type="time" id="im-ev-endtime">
+        </div>
+      </div>
+      <div class="fg">
+        <label>Farba eventu</label>
+        <div class="ev-colors" id="im-ev-colors"></div>
+      </div>
+    </div>
+
+    <!-- CONTENT fields -->
+    <div id="im-content-fields" style="display:none">
+      <div class="form-row">
+        <div class="fg">
+          <label>Stav obsahu</label>
+          <select id="im-content-status"></select>
+        </div>
+        <div class="fg">
+          <label>Stav textu</label>
+          <select id="im-text-status"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Dátum publikovania</label>
+          <input type="date" id="im-content-date">
+        </div>
+        <div class="fg"></div>
+      </div>
+      <div class="fg" id="im-content-notmiss" style="display:none">
+        <p class="filter-note" style="font-style:normal;margin:-2px 0 0">Bez dátumu zostane obsah len na nástenke Obsah (nie v kalendári).</p>
+      </div>
+      <div class="fg">
+        <label>Odkaz na Google Drive</label>
+        <input type="url" id="im-drive" placeholder="https://drive.google.com/...">
+      </div>
+      <div class="fg">
+        <label>Text (caption, scenár…)</label>
+        <textarea id="im-content-text" placeholder="Text k postu, nápady, scenár…"></textarea>
+      </div>
+      <div class="fg" id="im-content-sqlhint" style="display:none">
+        <p class="filter-note" style="font-style:normal;margin:-2px 0 0;color:var(--danger)">Obsahové polia (stav, Drive, text) sa zatiaľ nedajú uložiť – v Supabase treba spustiť krátky SQL (poslala som ti ho v chate).</p>
+      </div>
+    </div>
+
+    <!-- RECURRENCE (tasks + events) -->
+    <div id="im-recur-block">
+      <div class="modal-section">Opakovanie</div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Frekvencia</label>
+          <select id="im-recur">
+            <option value="">Neopakovať</option>
+            <option value="daily">Každý deň</option>
+            <option value="weekly">Každý týždeň</option>
+            <option value="monthly">Každý mesiac</option>
+            <option value="yearly">Každý rok</option>
+          </select>
+        </div>
+        <div class="fg" id="im-recur-end-wrap" style="display:none">
+          <label>Koniec opakovania</label>
+          <input type="date" id="im-recur-end">
+        </div>
+      </div>
+    </div>
+
+    <div class="mbtns">
+      <button class="mb del" id="im-del" onclick="delEditing()" style="margin-right:auto;display:none">Zmazať</button>
+      <button class="mb" onclick="closeItemModal()">Zrušiť</button>
+      <button class="mb pri" onclick="saveItem()">Uložiť</button>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER EDITOR -->
+<div class="overlay" id="fe-overlay">
+  <div class="modal" style="width:420px">
+    <h3>Druhy úloh</h3>
+    <p class="filter-note" style="font-style:normal;margin-top:-6px">Klikni na farebný štítok a vyber farbu.</p>
+    <div class="edit-list" id="fe-list"></div>
+    <button class="hbtn" onclick="addFilterCat()" style="width:100%;justify-content:center;margin-bottom:10px">+ Nový druh</button>
+    <div class="mbtns">
+      <button class="mb" onclick="closeFilterEditor()">Zrušiť</button>
+      <button class="mb pri" onclick="saveFilterEditor()">Uložiť</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAL MANAGER -->
+<div class="overlay" id="cm-overlay">
+  <div class="modal" style="width:380px">
+    <h3>Správa kalendárov</h3>
+    <div class="edit-list" id="cm-list"></div>
+    <button class="hbtn" onclick="addCalendar()" style="width:100%;justify-content:center;margin-bottom:10px">+ Nový kalendár</button>
+    <div class="mbtns">
+      <button class="mb" onclick="closeCalManager()">Zrušiť</button>
+      <button class="mb pri" onclick="saveCalManager()">Uložiť</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIST MANAGER -->
+<div class="overlay" id="lm-overlay">
+  <div class="modal" style="width:380px">
+    <h3>Správa zoznamov inboxu</h3>
+    <div class="edit-list" id="lm-list"></div>
+    <button class="hbtn" onclick="addList()" style="width:100%;justify-content:center;margin-bottom:10px">+ Nový zoznam</button>
+    <div class="mbtns">
+      <button class="mb" onclick="closeListManager()">Zrušiť</button>
+      <button class="mb pri" onclick="saveListManager()">Uložiť</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAIGN (PROJECT) EDITOR -->
+<div class="overlay" id="pm-overlay">
+  <div class="modal" style="width:440px">
+    <h3 id="pm-title">Nový projekt</h3>
+    <div class="fg">
+      <label>Názov projektu</label>
+      <input id="pm-label" placeholder="Napr. Rebranding webu, Vianočná kampaň…">
+    </div>
+    <div class="form-row">
+      <div class="fg" style="flex:0 0 auto">
+        <label>Farba</label>
+        <input type="color" id="pm-color" value="#2E6B3A" style="width:46px;height:38px;border-radius:9px;border:1px solid var(--border2);cursor:pointer;padding:2px">
+      </div>
+      <div class="fg">
+        <label>Dátum od</label>
+        <input type="date" id="pm-start">
+      </div>
+      <div class="fg">
+        <label>Dátum do</label>
+        <input type="date" id="pm-end">
+      </div>
+    </div>
+    <div class="fg" id="pm-group-wrap">
+      <label>Skupina <span style="font-weight:400;color:var(--text3)">(nepovinné – projekty sa zoskupia)</span></label>
+      <input id="pm-group" list="pm-group-list" placeholder="napr. Marketing, Eventy, Administratíva…">
+      <datalist id="pm-group-list"></datalist>
+    </div>
+    <div class="fg">
+      <label>Popis / cieľ</label>
+      <textarea id="pm-desc" placeholder="O čom je projekt, cieľ, poznámky…"></textarea>
+    </div>
+    <div class="mbtns">
+      <button class="mb del" id="pm-del" onclick="delProjEditing()" style="margin-right:auto;display:none">Zmazať</button>
+      <button class="mb" onclick="closeProjModal()">Zrušiť</button>
+      <button class="mb pri" onclick="saveProjModal()">Uložiť</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div class="drawer-bg" id="drawer-bg" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer" aria-label="Detail úlohy">
+  <div class="dr-head" id="dr-head"></div>
+  <div class="dr-body" id="dr-body"></div>
+  <div class="dr-foot" id="dr-foot"></div>
+</aside>
+
+<div class="pal-pop" id="pal-pop" style="display:none" role="dialog" aria-label="Výber farby"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL='https://geratlfhzagonwiecwbv.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlcmF0bGZoemFnb253aWVjd2J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTcwMTQsImV4cCI6MjA5Nzk3MzAxNH0.cGVBzSGdfr3ZVjvxPq4J7GON9z03bvc_jqS5AJgH0pY';
+const MONTHS_SK=['Január','Február','Marec','Apríl','Máj','Jún','Júl','August','September','Október','November','December'];
+
+const DEFAULT_CATS=[
+  {id:'p-social',label:'Post/IG',icon:'📱',bg:'#E6F1FB',color:'#0C447C',border:'#B5D4F4'},
+  {id:'p-story',label:'Story',icon:'💬',bg:'#FAEEDA',color:'#633806',border:'#FAC775'},
+  {id:'p-reel',label:'Reel',icon:'🎬',bg:'#FBEAF0',color:'#72243E',border:'#F4C0D1'},
+  {id:'p-mail',label:'Mail',icon:'✉️',bg:'#EAF3DE',color:'#27500A',border:'#C0DD97'},
+  {id:'p-newsletter',label:'Newsletter',icon:'📨',bg:'#EEEDFE',color:'#3C3489',border:'#CECBF6'},
+  {id:'p-urgent',label:'Urgent',icon:'🔥',bg:'#FAECE7',color:'#4A1B0C',border:'#F5C4B3'},
+  {id:'p-prep',label:'Príprava',icon:'🛠',bg:'#F1EFE8',color:'#444441',border:'#D3D1C7'},
+];
+const DEFAULT_CALENDARS=[
+  {id:'cal-marketing',label:'Marketing',color:'#2a5c2e'},
+  {id:'cal-admin',label:'Administrácia',color:'#0C447C'},
+];
+const DEFAULT_LISTS=[
+  {id:'list-general',label:'Všeobecné',color:'#5c5c58'},
+];
+
+// ── COLOR PALETTE (20 colors; each generates light chip + solid variants) ──
+const PALETTE=[
+  {n:'Les',h:'#2E6B3A'},{n:'Mäta',h:'#2A9A78'},{n:'Tyrkys',h:'#15879A'},{n:'Obloha',h:'#2F7BC4'},{n:'Indigo',h:'#4A55B8'},
+  {n:'Levanduľa',h:'#7E5BC2'},{n:'Slivka',h:'#8E3F8A'},{n:'Ruža',h:'#C2457A'},{n:'Malina',h:'#C23B4B'},{n:'Koral',h:'#E0685A'},
+  {n:'Tehla',h:'#B8502C'},{n:'Pomaranč',h:'#D9772B'},{n:'Horčica',h:'#C4951A'},{n:'Olivy',h:'#7D8C2A'},{n:'Mach',h:'#5E7D4F'},
+  {n:'Piesok',h:'#A68A5B'},{n:'Orech',h:'#7A5236'},{n:'Bridlica',h:'#56657A'},{n:'Grafit',h:'#3E3E3A'},{n:'Žltá',h:'#E2B23A'},
+  {n:'Petrolej',h:'#1F5F6B'},{n:'Čerešňa',h:'#9E2A3F'},{n:'Oceán',h:'#1E4E8C'},{n:'Hmla',h:'#8A94A6'},
+];
+function hexToRgb(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return [n>>16&255,n>>8&255,n&255];}
+function rgbToHex(r,g,b){return '#'+[r,g,b].map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');}
+function mix(h,w,t){const a=hexToRgb(h),b=hexToRgb(w);return rgbToHex(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t);}
+function lum(h){const c=hexToRgb(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);});return .2126*c[0]+.7152*c[1]+.0722*c[2];}
+// light chip colors for tasks
+function tone(base){return {bg:mix(base,'#ffffff',.86),border:mix(base,'#ffffff',.6),color:mix(base,'#000000',.42)};}
+// solid block for events: white text unless the color is too light
+function solidText(base){return lum(base)>.36?mix(base,'#000000',.7):'#ffffff';}
+function palName(h){const p=PALETTE.find(x=>x.h.toLowerCase()===String(h).toLowerCase());return p?p.n:'Vlastná';}
+// guess the base color of a category from its stored text color (older categories)
+function catBase(c){
+  const hit=PALETTE.find(p=>tone(p.h).bg.toLowerCase()===String(c.bg).toLowerCase());
+  return hit?hit.h:(c.color||'#56657A');
+}
+// event color: explicit ("ev:#hex" stored in cat) or the calendar color
+function eventColor(t){
+  if(t.cat&&t.cat.startsWith('ev:'))return t.cat.slice(3);
+  return getCal(t.cal_id).color||'#2F7BC4';
+}
+
+// ── STATE ──
+let items=[], lastId=0;
+let hasDetailCols=true; // description / subtasks / done_dates columns exist in DB
+let cats=JSON.parse(JSON.stringify(DEFAULT_CATS));
+let calendars=JSON.parse(JSON.stringify(DEFAULT_CALENDARS));
+let inboxLists=JSON.parse(JSON.stringify(DEFAULT_LISTS));
+let activeCalIds=new Set();
+// filters (remembered in this browser)
+let filterType='all', filterStatus='all', filterCats=new Set();
+try{const f=JSON.parse(localStorage.getItem('msba-filters')||'null');if(f){filterType=f.type||'all';filterStatus=f.status||'all';filterCats=new Set(f.cats||[]);}}catch(e){}
+function saveFilters(){try{localStorage.setItem('msba-filters',JSON.stringify({type:filterType,status:filterStatus,cats:[...filterCats]}));}catch(e){}}
+let currentView='calendar';
+const _now=new Date();
+let currentYear=_now.getFullYear(), currentMonth=_now.getMonth();
+let calSubView='month'; try{calSubView=localStorage.getItem('msba-calview')||'month';}catch(e){}
+let weekAnchor=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+let editId=null, dragId=null, currentItemType='task';
+let activeInboxListId='all';
+let currentUser=null;
+let drawerId=null, drawerOcc=null;
+// ── CAMPAIGNS (projects) ──
+let projects=[];
+let hasProjects=true;          // projects table exists in DB
+let hasItemProjectCols=true;   // items.project_id + items.status exist
+let hasProjNotes=true;         // projects.notes column exists
+let hasProjGroups=true;        // projects.grp column exists
+let projGroupCollapsed=new Set();
+try{const _g=JSON.parse(localStorage.getItem('msba-grpcollapsed')||'[]');if(Array.isArray(_g))projGroupCollapsed=new Set(_g);}catch(e){}
+let activeProjectId=null;      // open campaign on the Kampane page
+let editingProjId=null;        // campaign being edited in the modal
+let imPresetProj=null, imPresetStatus=null; // preset when adding from a board column
+let imPresetType=null, imPresetContentStatus=null; // preset when adding from the Obsah board
+let boardDragId=null;          // item being dragged on the kanban board
+let projSubView='board';       // 'board' | 'notes' on the project detail page
+try{projSubView=localStorage.getItem('msba-projview')||'board';}catch(e){}
+let projNoteMode='edit';       // 'edit' | 'preview' in the notes editor
+let activeNoteId=null;         // currently open note within the project
+const KANBAN=[{id:'plan',label:'📋 Plánované'},{id:'doing',label:'🚧 Robí sa'},{id:'done',label:'✅ Hotové'}];
+function statusOf(t){return t.status||(t.done?'done':'plan');}
+// ── CONTENT PLANNING (obsah) ──
+let hasContentCols=true;       // items.content_status + drive_link + content_text exist
+let hasTextStatus=true;        // items.text_status column exists
+let contentDragId=null;        // content card being dragged on the Obsah board
+let contentProjFilter='';      // filter Obsah board by project ('' = all)
+const CONTENT_STAGES=[
+  {id:'idea',label:'💡 Nápad',c:'#C4951A'},
+  {id:'wip',label:'✍️ V procese',c:'#2F7BC4'},
+  {id:'ready',label:'✅ Pripravené na publikáciu',c:'#2E6B3A'},
+  {id:'metricool',label:'🗂 Draft v Metricool',c:'#15879A'},
+  {id:'scheduled',label:'🗓 Naplánované',c:'#4A55B8'},
+  {id:'published',label:'🚀 Publikované',c:'#8E3F8A'},
+];
+function contentStatusOf(t){return t.content_status||'idea';}
+function contentStageLabel(id){const s=CONTENT_STAGES.find(x=>x.id===id);return s?s.label:id;}
+function contentStageColor(id){const s=CONTENT_STAGES.find(x=>x.id===id);return s?s.c:'#888';}
+// ── TEXT STATUS (stav textu / caption) – druhá nezávislá os ──
+const TEXT_STAGES=[
+  {id:'',label:'Bez textu',c:'#8A94A6'},
+  {id:'obsah',label:'📝 Obsah',c:'#C4951A'},
+  {id:'doladit',label:'✍️ Text doladiť',c:'#D9772B'},
+  {id:'final',label:'✅ Text finálny',c:'#2E6B3A'},
+];
+function textStatusOf(t){return t.text_status||'';}
+function textStageLabel(id){const s=TEXT_STAGES.find(x=>x.id===id);return s?s.label:id;}
+function textStageColor(id){const s=TEXT_STAGES.find(x=>x.id===id);return s?s.c:'#888';}
+// leading icon for a calendar pill: content items get a 📸 + status dot, others their category icon
+function pillLead(t,c){
+  if(t.type==='content'){const cs=contentStatusOf(t);return `<span class="cst-dot" style="background:${contentStageColor(cs)}" title="${esc(contentStageLabel(cs))}"></span>📸 `;}
+  return esc(c.icon)+' ';
+}
+
+// ── SESSION (auto-refresh so saves keep working when the app stays open) ──
+let refreshPromise=null;
+function storeSession(d){
+  const exp=d.expires_at?d.expires_at*1000:Date.now()+(d.expires_in||3600)*1000;
+  currentUser={access_token:d.access_token,refresh_token:d.refresh_token,user:d.user,_exp:exp};
+  localStorage.setItem('msba-session',JSON.stringify({access_token:d.access_token,refresh_token:d.refresh_token,user:d.user,expires_at:exp}));
+}
+// returns 'ok' | 'invalid' (must log in again) | 'offline'
+async function refreshSession(){
+  if(refreshPromise)return refreshPromise;
+  refreshPromise=(async()=>{
+    let stored=null;try{stored=JSON.parse(localStorage.getItem('msba-session')||'null');}catch(e){}
+    // another tab may have refreshed already – adopt its fresh token
+    if(stored&&stored.access_token&&stored.access_token!==currentUser?.access_token&&stored.expires_at>Date.now()+120000){
+      currentUser={access_token:stored.access_token,refresh_token:stored.refresh_token,user:stored.user,_exp:stored.expires_at};return 'ok';
+    }
+    const rt=stored?.refresh_token||currentUser?.refresh_token;
+    if(!rt)return 'invalid';
+    try{
+      const d=await sbAuthFetch('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:rt})});
+      storeSession(d);return 'ok';
+    }catch(e){return [400,401,403].includes(e.status)?'invalid':'offline';}
+  })();
+  try{return await refreshPromise;}finally{refreshPromise=null;}
+}
+function tokenExpiresSoon(ms){return currentUser&&currentUser._exp&&currentUser._exp-Date.now()<ms;}
+setInterval(()=>{if(tokenExpiresSoon(10*60000))refreshSession();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&tokenExpiresSoon(10*60000))refreshSession();});
+window.addEventListener('focus',()=>{if(tokenExpiresSoon(10*60000))refreshSession();});
+
+function sessionExpired(){
+  localStorage.removeItem('msba-session');
+  const email=currentUser?.user?.email||'';currentUser=null;
+  document.getElementById('auth-email').value=email;
+  authTab('login');
+  document.getElementById('auth-err').textContent='Prihlásenie vypršalo. Prihlás sa znova – dáta sú uložené.';
+  document.getElementById('auth-screen').classList.add('show');
+}
+
+// ── SUPABASE ──
+async function sbFetch(path,opts={},_retry=true){
+  if(tokenExpiresSoon(120000))await refreshSession();
+  const h={'apikey':SB_KEY,'Authorization':'Bearer '+(currentUser?.access_token||SB_KEY),'Content-Type':'application/json','Prefer':'return=representation',...opts.headers};
+  let res;
+  try{res=await fetch(SB_URL+path,{...opts,headers:h});}
+  catch(e){throw new Error('Bez pripojenia k internetu – skús to znova.');}
+  if(res.status===401&&_retry&&currentUser){
+    const r=await refreshSession();
+    if(r==='ok')return sbFetch(path,opts,false);
+    if(r==='invalid'){sessionExpired();throw new Error('Prihlásenie vypršalo.');}
+    throw new Error('Bez pripojenia k internetu – skús to znova.');
+  }
+  if(!res.ok){const e=await res.text();throw new Error(e);}
+  const t=await res.text();return t?JSON.parse(t):null;
+}
+async function sbAuthFetch(path,opts={}){
+  const h={'apikey':SB_KEY,'Content-Type':'application/json',...opts.headers};
+  const res=await fetch(SB_URL+path,{...opts,headers:h});
+  let d={};try{d=await res.json();}catch(e){}
+  if(!res.ok){const err=new Error(d.error_description||d.msg||'Auth error');err.status=res.status;throw err;}
+  return d;
+}
+
+// ── AUTH ──
+let authMode='login';
+function authTab(mode){
+  authMode=mode;
+  document.getElementById('tab-login').classList.toggle('active',mode==='login');
+  document.getElementById('tab-register').classList.toggle('active',mode==='register');
+  document.getElementById('auth-submit-btn').textContent=mode==='login'?'Prihlásiť sa':'Vytvoriť účet';
+  document.getElementById('auth-note').textContent=mode==='login'?'Tvoje dáta sú chránené a viditeľné len pre teba.':'Po registrácii budeš automaticky prihlásená.';
+  document.getElementById('auth-err').textContent='';
+}
+async function doAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  const errEl=document.getElementById('auth-err');
+  errEl.textContent='';
+  if(!email||!pass){errEl.textContent='Zadaj email a heslo.';return;}
+  document.getElementById('auth-submit-btn').textContent='...';
+  try{
+    let data;
+    if(authMode==='login'){data=await sbAuthFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email,password:pass})});}
+    else{data=await sbAuthFetch('/auth/v1/signup',{method:'POST',body:JSON.stringify({email,password:pass})});
+      if(data.user&&!data.access_token){errEl.textContent='Skontroluj email a potvrď registráciu.';document.getElementById('auth-submit-btn').textContent='Vytvoriť účet';return;}}
+    storeSession(data);
+    document.getElementById('auth-screen').classList.remove('show');
+    showLoading('Načítavam dáta...');
+    await initApp();
+  }catch(e){
+    errEl.textContent=e.message.includes('Invalid login')?'Nesprávny email alebo heslo.':e.message;
+    document.getElementById('auth-submit-btn').textContent=authMode==='login'?'Prihlásiť sa':'Vytvoriť účet';
+  }
+}
+async function tryRestoreSession(){
+  if(!localStorage.getItem('msba-session'))return false;
+  currentUser=null;
+  const r=await refreshSession();
+  if(r==='ok')return true;
+  if(r==='invalid'){localStorage.removeItem('msba-session');return false;}
+  // offline: keep the session, show a message
+  document.getElementById('loading-txt').textContent='Bez pripojenia k internetu. Obnov stránku, keď budeš online.';
+  return null;
+}
+function doLogout(){
+  if(!confirm('Odhlásiť sa?'))return;
+  localStorage.removeItem('msba-session');currentUser=null;items=[];
+  cats=JSON.parse(JSON.stringify(DEFAULT_CATS));calendars=JSON.parse(JSON.stringify(DEFAULT_CALENDARS));
+  inboxLists=JSON.parse(JSON.stringify(DEFAULT_LISTS));
+  document.getElementById('main-hdr').style.display='none';document.getElementById('main-body').style.display='none';
+  document.getElementById('auth-screen').classList.add('show');authTab('login');
+}
+
+// ── DB OPS ──
+function uid(){return currentUser.user?.id||currentUser.id;}
+// Loads everything. Throws on failure (never silently empties data). Returns true if the account is brand new.
+async function loadFromDB(){
+  const c=await sbFetch(`/rest/v1/calendars?user_id=eq.${uid()}&order=created_at`);
+  const k=await sbFetch(`/rest/v1/categories?user_id=eq.${uid()}&order=created_at`);
+  const l=await sbFetch(`/rest/v1/inbox_lists?user_id=eq.${uid()}&order=sort_order`);
+  const it=await sbFetch(`/rest/v1/items?user_id=eq.${uid()}&order=id`);
+  if(c&&c.length)calendars=c.map(r=>({id:r.id,label:r.label,color:r.color}));
+  if(k&&k.length)cats=k.map(r=>({id:r.id,label:r.label,icon:r.icon,bg:r.bg,color:r.color,border:r.border}));
+  if(l&&l.length)inboxLists=l.map(r=>({id:r.id,label:r.label,color:r.color}));
+  items=(it||[]).map(r=>({
+    id:Number(r.id),type:r.type,text:r.text,cat:r.cat,cal_id:r.cal_id,
+    date:r.date||null,end_date:r.end_date||null,multiday:r.multiday,done:r.done,
+    time_start:r.time_start?r.time_start.slice(0,5):null,deadline:r.deadline||null,
+    recur:r.recur||null,recur_end:r.recur_end||null,
+    inbox_list_id:r.inbox_list_id||null,
+    description:r.description||'',subtasks:Array.isArray(r.subtasks)?r.subtasks:[],
+    done_dates:Array.isArray(r.done_dates)?r.done_dates:[],
+    project_id:r.project_id?Number(r.project_id):null,status:r.status||null,
+    content_status:r.content_status||null,drive_link:r.drive_link||'',content_text:r.content_text||'',text_status:r.text_status||''
+  }));
+  // check whether the new detail columns exist
+  try{await sbFetch('/rest/v1/items?select=description,subtasks,done_dates&limit=1');hasDetailCols=true;}
+  catch(e){hasDetailCols=false;}
+  // campaigns: load table + detect item columns (all optional – app works without them)
+  try{
+    const pj=await sbFetch(`/rest/v1/projects?user_id=eq.${uid()}&order=sort_order,created_at`);
+    projects=(pj||[]).map(r=>({id:Number(r.id),label:r.label,color:r.color||'#2E6B3A',description:r.description||'',start_date:r.start_date||null,end_date:r.end_date||null,sort_order:r.sort_order||0,notes:parseNotes(r.notes),grp:r.grp||''}));
+    hasProjects=true;
+  }catch(e){hasProjects=false;projects=[];}
+  try{await sbFetch('/rest/v1/items?select=project_id,status&limit=1');hasItemProjectCols=true;}
+  catch(e){hasItemProjectCols=false;}
+  if(hasProjects){try{await sbFetch('/rest/v1/projects?select=notes&limit=1');hasProjNotes=true;}catch(e){hasProjNotes=false;}}else hasProjNotes=false;
+  if(hasProjects){try{await sbFetch('/rest/v1/projects?select=grp&limit=1');hasProjGroups=true;}catch(e){hasProjGroups=false;}}else hasProjGroups=false;
+  // content planning columns on items
+  try{await sbFetch('/rest/v1/items?select=content_status,drive_link,content_text&limit=1');hasContentCols=true;}
+  catch(e){hasContentCols=false;}
+  try{await sbFetch('/rest/v1/items?select=text_status&limit=1');hasTextStatus=true;}
+  catch(e){hasTextStatus=false;}
+  return !(c&&c.length)&&!(it&&it.length);
+}
+function genId(){
+  const maxLocal=items.reduce((m,t)=>Math.max(m,Number(t.id)||0),0);
+  lastId=Math.max(Date.now(),lastId+1,maxLocal+1);
+  return lastId;
+}
+function itemPayload(item){
+  const p={type:item.type,text:item.text,cat:item.cat,cal_id:item.cal_id,
+    date:item.date||null,end_date:item.end_date||null,multiday:!!item.multiday,done:!!item.done,
+    time_start:item.time_start||null,deadline:item.deadline||null,
+    recur:item.recur||null,recur_end:item.recur_end||null,inbox_list_id:item.inbox_list_id||null};
+  if(hasDetailCols){p.description=item.description||null;p.subtasks=item.subtasks||[];p.done_dates=item.done_dates||[];}
+  if(hasItemProjectCols){p.project_id=item.project_id||null;p.status=item.status||null;}
+  if(hasContentCols){p.content_status=item.content_status||null;p.drive_link=item.drive_link||null;p.content_text=item.content_text||null;}
+  if(hasTextStatus)p.text_status=item.text_status||null;
+  return p;
+}
+async function saveNewItem(item){
+  await sbFetch('/rest/v1/items',{method:'POST',body:JSON.stringify({id:item.id,user_id:uid(),...itemPayload(item)})});
+}
+async function updateItem(item){
+  await sbFetch(`/rest/v1/items?id=eq.${item.id}`,{method:'PATCH',body:JSON.stringify(itemPayload(item))});
+}
+async function deleteItem(id){await sbFetch(`/rest/v1/items?id=eq.${id}`,{method:'DELETE'});}
+// save one item with status indicator
+async function persist(t){
+  setSave('ukladám...','busy');
+  try{await updateItem(t);setSave('uložené ✓','ok');return true;}
+  catch(e){setSave('neuložené!','');toast('Neuložené: '+shortErr(e));return false;}
+}
+function shortErr(e){const m=String(e.message||e);try{const j=JSON.parse(m);return j.message||m;}catch(_){return m.slice(0,120);}}
+function projectPayload(p){const o={label:p.label,color:p.color||null,description:p.description||null,start_date:p.start_date||null,end_date:p.end_date||null,sort_order:p.sort_order||0};if(hasProjNotes)o.notes=JSON.stringify(Array.isArray(p.notes)?p.notes:[]);if(hasProjGroups)o.grp=p.grp||null;return o;}
+async function saveNewProject(p){await sbFetch('/rest/v1/projects',{method:'POST',body:JSON.stringify({id:p.id,user_id:uid(),...projectPayload(p)})});}
+async function updateProject(p){await sbFetch(`/rest/v1/projects?id=eq.${p.id}`,{method:'PATCH',body:JSON.stringify(projectPayload(p))});}
+async function deleteProjectDB(id){
+  await sbFetch(`/rest/v1/projects?id=eq.${id}`,{method:'DELETE'});
+  // uvoľni položky, ktoré boli v tejto kampani
+  if(hasItemProjectCols)await sbFetch(`/rest/v1/items?user_id=eq.${uid()}&project_id=eq.${id}`,{method:'PATCH',body:JSON.stringify({project_id:null})});
+}
+async function saveCalendarsToDB(){
+  await sbFetch(`/rest/v1/calendars?user_id=eq.${uid()}`,{method:'DELETE'});
+  if(calendars.length)await sbFetch('/rest/v1/calendars',{method:'POST',body:JSON.stringify(calendars.map(c=>({...c,user_id:uid()})))});
+}
+async function saveCatsToDB(){
+  await sbFetch(`/rest/v1/categories?user_id=eq.${uid()}`,{method:'DELETE'});
+  if(cats.length)await sbFetch('/rest/v1/categories',{method:'POST',body:JSON.stringify(cats.map(c=>({...c,user_id:uid()})))});
+}
+async function saveListsToDB(){
+  await sbFetch(`/rest/v1/inbox_lists?user_id=eq.${uid()}`,{method:'DELETE'});
+  if(inboxLists.length)await sbFetch('/rest/v1/inbox_lists',{method:'POST',body:JSON.stringify(inboxLists.map((l,i)=>({...l,user_id:uid(),sort_order:i})))});
+}
+async function seedDefaults(){
+  await sbFetch('/rest/v1/calendars',{method:'POST',body:JSON.stringify(DEFAULT_CALENDARS.map(c=>({...c,user_id:uid()})))});
+  await sbFetch('/rest/v1/categories',{method:'POST',body:JSON.stringify(DEFAULT_CATS.map(c=>({...c,user_id:uid()})))});
+  await sbFetch('/rest/v1/inbox_lists',{method:'POST',body:JSON.stringify(DEFAULT_LISTS.map((l,i)=>({...l,user_id:uid(),sort_order:i})))});
+}
+
+// ── INIT ──
+function showLoading(msg){document.getElementById('loading-txt').textContent=msg||'Načítavam...';document.getElementById('loading-screen').classList.add('show');}
+function hideLoading(){document.getElementById('loading-screen').classList.remove('show');}
+async function initApp(){
+  showLoading('Načítavam dáta...');
+  try{
+    const isNew=await loadFromDB();
+    if(isNew){showLoading('Prvé spustenie...');await seedDefaults();await loadFromDB();}
+    applyCatStyles();
+    document.getElementById('main-hdr').style.display='flex';document.getElementById('main-body').style.display='flex';
+    hideLoading();renderAll();
+  }catch(e){hideLoading();alert('Chyba pri načítaní: '+e.message);}
+}
+
+// ── STYLES ──
+function applyCatStyles(){
+  let el=document.getElementById('dcs');if(!el){el=document.createElement('style');el.id='dcs';document.head.appendChild(el);}
+  el.textContent=cats.map(c=>`.${c.id}{background:${c.bg};color:${c.color};border-color:${c.border}}`).join('\n');
+}
+function getCat(id){return cats.find(c=>c.id===id)||{id,label:id,icon:'',bg:'#eee',color:'#333',border:'#ccc'};}
+function getCal(id){return calendars.find(c=>c.id===id)||{id,label:id,color:'#999'};}
+function getList(id){return inboxLists.find(l=>l.id===id)||inboxLists[0]||{id:'',label:'',color:'#999'};}
+
+// ── HELPERS ──
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function toDate(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function fromDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function addDays(s,n){const d=toDate(s);d.setDate(d.getDate()+n);return fromDate(d);}
+function daysBetween(a,b){return Math.round((toDate(b)-toDate(a))/86400000);}
+function setSave(msg,cls){const e=document.getElementById('save-ind'),t=document.getElementById('save-txt');e.className='save-ind'+(cls?' '+cls:'');t.textContent=msg;}
+function todayStr(){return fromDate(new Date());}
+
+// ── DONE STATE (recurring items track done per occurrence) ──
+function isDone(t,occ){
+  if(t.recur&&occ&&hasDetailCols)return (t.done_dates||[]).includes(occ);
+  return !!t.done;
+}
+function isSubDone(s,t,occ){
+  if(t.recur&&occ)return (s.dd||[]).includes(occ);
+  return !!s.done;
+}
+const RECUR_LABEL={daily:'každý deň',weekly:'každý týždeň',monthly:'každý mesiac',yearly:'každý rok'};
+
+// ── RECURRING: expand tasks + events into visible date range ──
+function expandRecurring(baseItems, rangeStart, rangeEnd){
+  const result=[];
+  baseItems.forEach(item=>{
+    if(!item.recur||!item.date){result.push(item);return;}
+    // generate occurrences in range
+    const base=toDate(item.date);
+    const span=item.end_date?Math.max(0,daysBetween(item.date,item.end_date)):0;
+    const nth=n=>{ // n-th occurrence (monthly/yearly clamp to month end, e.g. 31st → 30th)
+      if(item.recur==='daily')return addDays(item.date,n);
+      if(item.recur==='weekly')return addDays(item.date,n*7);
+      const months=item.recur==='monthly'?n:n*12;
+      const y=base.getFullYear()+Math.floor((base.getMonth()+months)/12),m=(base.getMonth()+months)%12;
+      const dim=new Date(y,m+1,0).getDate();
+      return fromDate(new Date(y,m,Math.min(base.getDate(),dim)));
+    };
+    if(!RECUR_LABEL[item.recur]){result.push(item);return;}
+    for(let n=0;n<3000;n++){
+      const cur=nth(n);
+      if(cur>rangeEnd)break;
+      if(item.recur_end&&cur>item.recur_end)break;
+      const occEnd=span?addDays(cur,span):cur;
+      if(occEnd>=rangeStart){
+        result.push({...item,date:cur,end_date:span?occEnd:item.end_date,done:isDone(item,cur),_recurring:true,_baseId:item.id,_occ:cur,id:item.id+'_'+cur});
+      }
+    }
+  });
+  return result;
+}
+
+// ── CAL SWITCHER ──
+function renderCalSwitcher(){
+  const el=document.getElementById('cal-switcher');
+  let h=calendars.map(c=>{const on=activeCalIds.size===0||activeCalIds.has(c.id);
+    return `<button class="cs-btn${on?' active':''}" onclick="toggleCalFilter('${c.id}')" style="${on?'background:'+c.color+';color:#fff;border-color:transparent':''}">
+      <span class="dot" style="background:${on?'rgba(255,255,255,.7)':c.color}"></span>${esc(c.label)}</button>`;}).join('');
+  h+=`<button class="cs-add" onclick="openCalManager()">⚙ Kalendáre</button>`;
+  el.innerHTML=h;
+}
+function toggleCalFilter(calId){if(activeCalIds.has(calId))activeCalIds.delete(calId);else activeCalIds.add(calId);renderCalSwitcher();renderAll();}
+
+// ── FILTER CHIPS ──
+function renderFilterChips(){
+  // cleanup: forget filters for deleted categories
+  [...filterCats].forEach(id=>{if(!cats.some(c=>c.id===id))filterCats.delete(id);});
+  const seg=(val,cur,label,fn)=>`<button class="${val===cur?'on':''}" onclick="${fn}('${val}')" aria-pressed="${val===cur}">${label}</button>`;
+  document.getElementById('seg-type').innerHTML=
+    seg('all',filterType,'Všetko','setFilterType')+
+    seg('task',filterType,'<span class="tk-swatch"></span>Úlohy','setFilterType')+
+    seg('event',filterType,'<span class="ev-swatch"></span>Eventy','setFilterType');
+  document.getElementById('seg-status').innerHTML=
+    seg('all',filterStatus,'Všetky','setFilterStatus')+
+    seg('open',filterStatus,'Otvorené','setFilterStatus')+
+    seg('done',filterStatus,'Hotové','setFilterStatus');
+  const el=document.getElementById('filter-chips');
+  const disabled=filterType==='event';
+  el.style.opacity=disabled?.4:1;el.style.pointerEvents=disabled?'none':'';
+  el.innerHTML=cats.map(c=>{
+    const on=filterCats.has(c.id),base=catBase(c);
+    const st=on?`background:${c.bg};color:${c.color};border-color:${c.color};font-weight:600`:'';
+    return `<button class="fchip" style="${st}" onclick="toggleCatFilter('${c.id}')" aria-pressed="${on}"><span class="cdot" style="background:${base}"></span>${esc(c.icon)} ${esc(c.label)}</button>`;
+  }).join('');
+  const any=filterType!=='all'||filterStatus!=='all'||filterCats.size>0;
+  document.getElementById('filter-clear').style.display=any?'':'none';
+}
+function setFilterType(v){filterType=v;saveFilters();renderAll();}
+function setFilterStatus(v){filterStatus=v;saveFilters();renderAll();}
+function toggleCatFilter(id){filterCats.has(id)?filterCats.delete(id):filterCats.add(id);saveFilters();renderAll();}
+function clearFilters(){filterType='all';filterStatus='all';filterCats=new Set();activeCalIds=new Set();saveFilters();renderAll();}
+function itemVisible(t){
+  if(activeCalIds.size>0&&t.cal_id&&!activeCalIds.has(t.cal_id))return false;
+  const isEv=t.type==='event';
+  if(filterType==='task'&&isEv)return false;
+  if(filterType==='event'&&!isEv)return false;
+  if(filterStatus==='open'&&t.done)return false;
+  if(filterStatus==='done'&&!t.done)return false;
+  if(!isEv&&filterCats.size>0&&!filterCats.has(t.cat))return false;
+  // category filter active + "Všetko" → hide events so the view shows only the chosen kinds
+  if(isEv&&filterCats.size>0&&filterType==='all')return false;
+  return true;
+}
+
+// ── STATS ──
+function updateStats(){
+  const cal=items.filter(t=>t.date),inbox=items.filter(t=>!t.date),done=cal.filter(t=>t.done).length;
+  document.getElementById('s-total').textContent=cal.length;
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-left').textContent=cal.length-done;
+  document.getElementById('s-inbox').textContent=inbox.length;
+  document.getElementById('inbox-badge').textContent=inbox.length;
+}
+
+// ── SIDEBAR INBOX ──
+function renderSidebarInbox(){
+  const list=document.getElementById('inbox-list');
+  const all=items.filter(t=>!t.date);
+  const its=all.filter(itemVisible);
+  const hidden=all.length-its.length;
+  const hiddenNote=hidden?`<div class="inbox-empty" style="padding:6px 8px">${hidden} ${hidden===1?'položka skrytá':hidden<5?'položky skryté':'položiek skrytých'} filtrom</div>`:'';
+  if(!its.length){list.innerHTML=(all.length?'':'<div class="inbox-empty">Žiadne položky v inboxe</div>')+hiddenNote;return;}
+  list.innerHTML=hiddenNote.replace('padding:6px 8px','padding:0 8px 6px')+its.map(t=>{const c=getCat(t.cat);
+    const sub=subCount(t);const meta=[];
+    if(sub.total)meta.push(`☑ ${sub.done}/${sub.total}`);
+    if(t.deadline)meta.push(`⚑ ${t.deadline.slice(5)}`);
+    if(t.recur)meta.push('↻');
+    return `<div class="inbox-item" id="ib${t.id}" draggable="true" ondragstart="ibDrag(${t.id},event)" ondragend="de()" onclick="openDrawer(${t.id})" title="Klikni pre detail, potiahni do kalendára">
+      <span class="ib-cat ${t.cat}">${esc(c.icon)} ${esc(c.label)}</span>
+      <div class="ib-txt${t.done?' done':''}" style="${t.done?'text-decoration:line-through;opacity:.5':''}">${esc(t.text)}</div>
+      ${meta.length?`<div class="ib-meta">${meta.join(' · ')}</div>`:''}
+    </div>`;}).join('');
+}
+function subCount(t,occ){const s=t.subtasks||[];return {total:s.length,done:s.filter(x=>isSubDone(x,t,occ)).length};}
+
+// ── VIEW SWITCH ──
+function switchView(v){
+  currentView=v;
+  document.getElementById('view-calendar').style.display=v==='calendar'?'':'none';
+  document.getElementById('view-inbox').style.display=v==='inbox'?'':'none';
+  document.getElementById('view-campaigns').style.display=v==='campaigns'?'':'none';
+  document.getElementById('view-content').style.display=v==='content'?'':'none';
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.toggle('active',el.dataset.view===v));
+  renderAll();
+}
+function renderAll(){
+  updateStats();renderCalSwitcher();renderFilterChips();renderSidebarInbox();
+  if(currentView==='calendar')renderCalendar();if(currentView==='inbox')renderInboxPage();
+  if(currentView==='campaigns')renderCampaigns();
+  if(currentView==='content')renderContent();
+  if(drawerId!==null){
+    // keep focus/cursor in the description while re-rendering
+    const a=document.activeElement,keep=a&&a.id==='dr-desc'?[a.selectionStart,a.selectionEnd]:null;
+    const newSub=document.activeElement?.id==='dr-sub-new';
+    renderDrawer();
+    if(keep){const d=document.getElementById('dr-desc');d.focus();d.setSelectionRange(keep[0],keep[1]);}
+    if(newSub)document.getElementById('dr-sub-new')?.focus();
+  }
+}
+
+// ── CALENDAR ──
+function shiftMonth(d){currentMonth+=d;while(currentMonth<0){currentMonth+=12;currentYear--;}while(currentMonth>11){currentMonth-=12;currentYear++;}}
+function prevPeriod(){if(calSubView==='week')weekAnchor=addDays(weekAnchor,-7);else shiftMonth(-1);renderAll();}
+function nextPeriod(){if(calSubView==='week')weekAnchor=addDays(weekAnchor,7);else shiftMonth(1);renderAll();}
+function goToday(){const d=new Date();currentYear=d.getFullYear();currentMonth=d.getMonth();weekAnchor=todayStr();renderAll();}
+function setCalView(v){calSubView=v;try{localStorage.setItem('msba-calview',v);}catch(e){}renderCalendar();}
+
+// dispatcher: picks month / week / list sub-view
+function renderCalendar(){
+  ['month','week','list'].forEach(v=>{const b=document.getElementById('cv-'+v);if(b)b.classList.toggle('on',calSubView===v);});
+  const mv=document.getElementById('cal-month-view'),wv=document.getElementById('cal-week-view'),lv=document.getElementById('cal-list-view');
+  if(mv)mv.style.display=calSubView==='month'?'':'none';
+  if(wv)wv.style.display=calSubView==='week'?'':'none';
+  if(lv)lv.style.display=calSubView==='list'?'':'none';
+  if(calSubView==='week')renderWeekView();
+  else if(calSubView==='list')renderListView();
+  else renderMonthView();
+}
+
+function renderMonthView(){
+  document.getElementById('month-label').textContent=MONTHS_SK[currentMonth]+' '+currentYear;
+  const weeksEl=document.getElementById('cal-weeks');
+  const firstDay=new Date(currentYear,currentMonth,1);
+  const lastDay=new Date(currentYear,currentMonth+1,0);
+  const startOff=(firstDay.getDay()+6)%7;
+  const today=todayStr();
+  const days=[];
+  const sd=new Date(firstDay);sd.setDate(sd.getDate()-startOff);
+  const total=Math.ceil((startOff+lastDay.getDate())/7)*7;
+  for(let i=0;i<total;i++){const d=new Date(sd);d.setDate(sd.getDate()+i);days.push(fromDate(d));}
+
+  const rangeStart=days[0], rangeEnd=days[days.length-1];
+  // Expand recurring tasks + events for this range
+  const baseRecur=items.filter(t=>t.recur&&t.date);
+  const expandedRecur=expandRecurring(baseRecur,rangeStart,rangeEnd);
+  const nonRecurItems=items.filter(t=>!(t.recur&&t.date));
+  const allVisible=[...nonRecurItems,...expandedRecur];
+
+  const multidays=allVisible.filter(t=>t.multiday&&t.date&&t.end_date&&itemVisible(t));
+
+  let html='';
+  for(let w=0;w<days.length/7;w++){
+    const week=days.slice(w*7,w*7+7);
+    const wStart=week[0],wEnd=week[6];
+    const weekStripes=multidays.filter(t=>t.date<=wEnd&&t.end_date>=wStart);
+    const stripeRows=[];
+    weekStripes.forEach(t=>{let placed=false;for(let r=0;r<stripeRows.length;r++){if(!stripeRows[r].some(s=>!(t.end_date<s.date||t.date>s.end_date))){stripeRows[r].push(t);placed=true;break;}}if(!placed)stripeRows.push([t]);});
+
+    html+=`<div class="cal-week">`;
+    week.forEach(dk=>{
+      const isOther=(dk<fromDate(firstDay)||dk>fromDate(lastDay));
+      const isToday=dk===today;
+      const dayAllItems=allVisible.filter(t=>t.date===dk&&!t.multiday&&itemVisible(t));
+      const dayEvents=dayAllItems.filter(t=>t.type==='event');
+      const dayTasks=dayAllItems.filter(t=>t.type!=='event');
+      const dayStripes=[];
+      stripeRows.forEach((row,ri)=>{row.forEach(t=>{if(dk>=t.date&&dk<=t.end_date){const isStart=dk===t.date,isEnd=dk===t.end_date;const cls=isStart&&isEnd?'stripe-solo':isStart?'stripe-start':isEnd?'stripe-end':'stripe-mid';dayStripes.push({t,ri,cls,isStart});}});});
+
+      html+=`<div class="cal-day${isOther?' other-month':''}${isToday?' today':''}" id="day-${dk}"
+        ondragover="dov(event,'${dk}')" ondragleave="dlv('${dk}')" ondrop="dp(event,'${dk}')">
+        <div class="dnum-row"><span class="dnum-circle">${new Date(dk+'T12:00').getDate()}</span>
+          <button class="day-add-btn" onclick="openItemModal('${dk}')">+</button></div>`;
+
+      // Events
+      dayEvents.forEach(t=>{
+        const bid=t._recurring?t._baseId:t.id, occ=t._occ?`'${t._occ}'`:'null';
+        const base=items.find(x=>x.id===bid)||t;
+        const timeStr=t.time_start?`<span class="event-time">⏰${t.time_start}</span>`:'';
+        const recurStr=t.recur?`<span class="event-recur">↻</span>`:'';
+        const sc=subCount(base,t._occ);
+        const subStr=sc.total?`<span class="event-time">☑${sc.done}/${sc.total}</span>`:'';
+        html+=`<div class="event-wrap"><div class="event-pill${t.done?' done':''}" onclick="openDrawer(${bid},${occ})">
+          <span class="event-pill-txt">📅 ${esc(t.text)}</span>${timeStr}${subStr}${recurStr}
+          <span class="event-acts">
+            <button class="pac" title="Hotovo" onclick="event.stopPropagation();togItem(${bid},${occ})">${t.done?'↩':'✓'}</button>
+            <button class="pac" title="Upraviť" onclick="event.stopPropagation();edItem(${bid})">✎</button>
+          </span></div></div>`;
+      });
+
+      // Tasks
+      dayTasks.forEach(t=>{
+        const bid=t._recurring?t._baseId:t.id, occ=t._occ?`'${t._occ}'`:'null';
+        const base=items.find(x=>x.id===bid)||t;
+        const c=getCat(t.cat);
+        const isOverdue=t.deadline&&t.deadline<today&&!t.done;
+        const timeStr=t.time_start?`<span class="pill-meta">⏰${t.time_start}</span>`:'';
+        const dlStr=t.deadline?`<span class="pill-meta pill-deadline${isOverdue?' overdue':''}">⚑${t.deadline.slice(5)}</span>`:'';
+        const sc=subCount(base,t._occ);
+        const subStr=sc.total?`<span class="pill-sub">☑${sc.done}/${sc.total}</span>`:'';
+        const recurStr=t.recur?`<span class="pill-sub">↻</span>`:'';
+        html+=`<div class="pill-wrap"><div class="pill ${t.cat}${t.done?' done':''}${isOverdue?' overdue':''}" id="p${t.id}" draggable="true" ondragstart="ds(${bid},event,${occ},'p${t.id}')" ondragend="de()" onclick="openDrawer(${bid},${occ})" title="Klikni pre detail">
+          <span class="pill-txt">${pillLead(t,c)}${esc(t.text)}</span>${timeStr}${dlStr}${subStr}${recurStr}
+          <span class="pill-acts">
+            <button class="pac" title="Hotovo" onclick="event.stopPropagation();togItem(${bid},${occ})">${t.done?'↩':'✓'}</button>
+            <button class="pac" title="Upraviť" onclick="event.stopPropagation();edItem(${bid})">✎</button>
+          </span></div></div>`;
+      });
+
+      // Stripes
+      html+=`<div class="stripe-container">`;
+      Array.from({length:stripeRows.length},(_,ri)=>dayStripes.find(s=>s.ri===ri)||null).forEach(entry=>{
+        if(!entry){html+=`<div class="stripe-spacer"></div>`;return;}
+        const{t,cls,isStart}=entry;const c=getCat(t.cat);
+        const bid=t._recurring?t._baseId:t.id, occ=t._occ?`'${t._occ}'`:'null';
+        const drag=t.type!=='event'?`draggable="true" ondragstart="ds(${bid},event,${occ})" ondragend="de()"`:'';
+        html+=`<div class="stripe ${t.cat} ${cls}${t.done?' done':''}" ${drag} onclick="openDrawer(${bid},${occ})" title="${esc(t.text)}">${isStart?esc(c.icon)+' '+esc(t.text):''}</div>`;
+      });
+      html+=`</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  weeksEl.innerHTML=html;
+}
+
+// ── SHARED PILL MARKUP (used by week + list views) ──
+function eventPillHTML(t){
+  const bid=t._recurring?t._baseId:t.id, occ=t._occ?`'${t._occ}'`:'null';
+  const base=items.find(x=>x.id===bid)||t;
+  const timeStr=t.time_start?`<span class="event-time">⏰${t.time_start}</span>`:'';
+  const recurStr=t.recur?`<span class="event-recur">↻</span>`:'';
+  const sc=subCount(base,t._occ);
+  const subStr=sc.total?`<span class="event-time">☑${sc.done}/${sc.total}</span>`:'';
+  return `<div class="event-wrap"><div class="event-pill${t.done?' done':''}" onclick="openDrawer(${bid},${occ})">
+    <span class="event-pill-txt">📅 ${esc(t.text)}</span>${timeStr}${subStr}${recurStr}
+    <span class="event-acts">
+      <button class="pac" title="Hotovo" onclick="event.stopPropagation();togItem(${bid},${occ})">${t.done?'↩':'✓'}</button>
+      <button class="pac" title="Upraviť" onclick="event.stopPropagation();edItem(${bid})">✎</button>
+    </span></div></div>`;
+}
+function taskPillHTML(t){
+  const bid=t._recurring?t._baseId:t.id, occ=t._occ?`'${t._occ}'`:'null';
+  const base=items.find(x=>x.id===bid)||t;
+  const c=getCat(t.cat);const today=todayStr();
+  const isOverdue=t.deadline&&t.deadline<today&&!t.done;
+  const timeStr=t.time_start?`<span class="pill-meta">⏰${t.time_start}</span>`:'';
+  const dlStr=t.deadline?`<span class="pill-meta pill-deadline${isOverdue?' overdue':''}">⚑${t.deadline.slice(5)}</span>`:'';
+  const sc=subCount(base,t._occ);
+  const subStr=sc.total?`<span class="pill-sub">☑${sc.done}/${sc.total}</span>`:'';
+  const recurStr=t.recur?`<span class="pill-sub">↻</span>`:'';
+  return `<div class="pill-wrap"><div class="pill ${t.cat}${t.done?' done':''}${isOverdue?' overdue':''}" onclick="openDrawer(${bid},${occ})" title="Klikni pre detail">
+    <span class="pill-txt">${pillLead(t,c)}${esc(t.text)}</span>${timeStr}${dlStr}${subStr}${recurStr}
+    <span class="pill-acts">
+      <button class="pac" title="Hotovo" onclick="event.stopPropagation();togItem(${bid},${occ})">${t.done?'↩':'✓'}</button>
+      <button class="pac" title="Upraviť" onclick="event.stopPropagation();edItem(${bid})">✎</button>
+    </span></div></div>`;
+}
+function pillForItem(t){return t.type==='event'?eventPillHTML(t):taskPillHTML(t);}
+function byTime(a,b){return (a.time_start||'99:99').localeCompare(b.time_start||'99:99');}
+
+// expand recurring + apply filters for a date range; returns visible items in [start,end]
+function visibleInRange(rangeStart,rangeEnd){
+  const baseRecur=items.filter(t=>t.recur&&t.date);
+  const expanded=expandRecurring(baseRecur,rangeStart,rangeEnd);
+  const nonRecur=items.filter(t=>!(t.recur&&t.date));
+  return [...nonRecur,...expanded].filter(itemVisible);
+}
+function weekStartOf(dk){const off=(new Date(dk+'T12:00').getDay()+6)%7;return addDays(dk,-off);}
+function weekLabel(a,b){
+  const da=new Date(a+'T12:00'),db=new Date(b+'T12:00');
+  if(da.getMonth()===db.getMonth())return da.getDate()+'.–'+db.getDate()+'. '+MONTHS_SK[da.getMonth()]+' '+da.getFullYear();
+  if(da.getFullYear()===db.getFullYear())return da.getDate()+'. '+MONTHS_SK[da.getMonth()]+' – '+db.getDate()+'. '+MONTHS_SK[db.getMonth()]+' '+db.getFullYear();
+  return da.getDate()+'. '+MONTHS_SK[da.getMonth()]+' '+da.getFullYear()+' – '+db.getDate()+'. '+MONTHS_SK[db.getMonth()]+' '+db.getFullYear();
+}
+
+// ── WEEK VIEW ──
+const WDAYS_FULL=['Pondelok','Utorok','Streda','Štvrtok','Piatok','Sobota','Nedeľa'];
+function renderWeekView(){
+  const ws=weekStartOf(weekAnchor);
+  const days=[];for(let i=0;i<7;i++)days.push(addDays(ws,i));
+  const rangeStart=days[0],rangeEnd=days[6],today=todayStr();
+  document.getElementById('month-label').textContent=weekLabel(rangeStart,rangeEnd);
+  const vis=visibleInRange(rangeStart,rangeEnd);
+  let h='<div class="week-grid">';
+  days.forEach((dk,i)=>{
+    const dd=new Date(dk+'T12:00'),isToday=dk===today;
+    const dayItems=vis.filter(t=>(t.multiday&&t.end_date)?(dk>=t.date&&dk<=t.end_date):t.date===dk).slice().sort(byTime);
+    h+=`<div class="week-col${isToday?' today':''}">
+      <div class="week-colhdr${isToday?' today':''}">
+        <span class="week-dn">${WDAYS_FULL[i].slice(0,2)}</span>
+        <span class="week-dd">${dd.getDate()}.${dd.getMonth()+1}.</span>
+        <button class="day-add-btn" onclick="openItemModal('${dk}')">+</button>
+      </div>
+      <div class="week-items">`;
+    if(!dayItems.length)h+=`<div class="week-empty">—</div>`;
+    else dayItems.forEach(t=>{h+=pillForItem(t);});
+    h+=`</div></div>`;
+  });
+  h+='</div>';
+  document.getElementById('cal-week-view').innerHTML=h;
+}
+
+// ── LIST / AGENDA VIEW (current month, grouped by date) ──
+const WDAYS_SUN=['Nedeľa','Pondelok','Utorok','Streda','Štvrtok','Piatok','Sobota'];
+function renderListView(){
+  const rangeStart=fromDate(new Date(currentYear,currentMonth,1));
+  const rangeEnd=fromDate(new Date(currentYear,currentMonth+1,0));
+  document.getElementById('month-label').textContent=MONTHS_SK[currentMonth]+' '+currentYear;
+  const today=todayStr();
+  const vis=visibleInRange(rangeStart,rangeEnd).filter(t=>t.date&&t.date>=rangeStart&&t.date<=rangeEnd);
+  const byDate={};
+  vis.forEach(t=>{(byDate[t.date]=byDate[t.date]||[]).push(t);});
+  const dates=Object.keys(byDate).sort();
+  const el=document.getElementById('cal-list-view');
+  if(!dates.length){el.innerHTML='<div class="list-empty">Žiadne položky v tomto mesiaci.</div>';return;}
+  let h='<div class="agenda">';
+  dates.forEach(dk=>{
+    const dd=new Date(dk+'T12:00'),isToday=dk===today;
+    h+=`<div class="agenda-day">
+      <div class="agenda-date${isToday?' today':''}">
+        <span class="agenda-dnum">${dd.getDate()}</span>
+        <span class="agenda-dinfo"><b>${WDAYS_SUN[dd.getDay()]}</b>${isToday?' · Dnes':''}<br>${MONTHS_SK[dd.getMonth()].slice(0,3)}.</span>
+      </div>
+      <div class="agenda-items">`;
+    byDate[dk].slice().sort(byTime).forEach(t=>{h+=pillForItem(t);});
+    h+=`</div></div>`;
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+// ── INBOX PAGE ──
+function renderInboxPage(){
+  // Tabs
+  const tabsEl=document.getElementById('inbox-lists-tabs');
+  const allCount=items.filter(t=>!t.date&&!t.done).length;
+  let tabHtml=`<button class="il-tab${activeInboxListId==='all'?' active':''}" onclick="setInboxList('all')" style="${activeInboxListId==='all'?'border-color:#2a5c2e;color:#2a5c2e':''}">
+    <span class="il-dot" style="background:#5c5c58"></span>Všetky <span class="il-count">(${allCount})</span></button>`;
+  tabHtml+=inboxLists.map(l=>{
+    const cnt=items.filter(t=>!t.date&&!t.done&&t.inbox_list_id===l.id).length;
+    const active=activeInboxListId===l.id;
+    return `<button class="il-tab${active?' active':''}" onclick="setInboxList('${l.id}')" style="${active?'border-color:'+l.color+';color:'+l.color:''}">
+      <span class="il-dot" style="background:${l.color}"></span>${esc(l.label)} <span class="il-count">(${cnt})</span></button>`;
+  }).join('');
+  tabsEl.innerHTML=tabHtml;
+
+  // Items
+  const el=document.getElementById('inbox-page-content');
+  let its=items.filter(t=>!t.date);
+  if(activeInboxListId!=='all') its=its.filter(t=>t.inbox_list_id===activeInboxListId);
+  if(!its.length){el.innerHTML='<p style="color:var(--text3);font-style:italic;padding:20px 0">Žiadne položky v tomto zozname.</p>';return;}
+  const todo=its.filter(t=>!t.done),done=its.filter(t=>t.done);
+  let h='';
+  if(todo.length)h+=`<div class="sec-title">Na spracovanie (${todo.length})</div>`+todo.map(inboxCard).join('');
+  if(done.length)h+=`<div class="sec-title">Hotové (${done.length})</div>`+done.map(inboxCard).join('');
+  el.innerHTML=h;
+}
+function setInboxList(id){activeInboxListId=id;renderInboxPage();}
+
+function inboxCard(t){
+  const c=getCat(t.cat);
+  const today=todayStr();
+  const dlWarn=t.deadline&&t.deadline<today&&!t.done;
+  const metaParts=[];
+  if(t.deadline)metaParts.push(`<span class="${dlWarn?'ic-deadline-warn':''}">⚑ Deadline: ${t.deadline}</span>`);
+  if(t.time_start)metaParts.push(`⏰ ${t.time_start}`);
+  const listLabel=t.inbox_list_id?getList(t.inbox_list_id).label:'';
+  if(listLabel)metaParts.push(`📋 ${esc(listLabel)}`);
+  const sc=subCount(t);if(sc.total)metaParts.push(`☑ ${sc.done}/${sc.total}`);
+  if(t.description)metaParts.push('📝 popis');
+  if(t.recur)metaParts.push(`↻ ${RECUR_LABEL[t.recur]||''}`);
+  return `<div class="inbox-card">
+    <div class="ic-check${t.done?' done':''}" onclick="togItem(${t.id})">${t.done?'✓':''}</div>
+    <div class="ic-body">
+      <div class="ic-top"><span class="ic-cat ${t.cat}">${esc(c.icon)} ${esc(c.label)}</span>
+        <span class="ic-txt clickable${t.done?' done':''}" onclick="openDrawer(${t.id})">${esc(t.text)}</span></div>
+      ${metaParts.length?`<div class="ic-meta">${metaParts.join('')}</div>`:''}
+    </div>
+    <div class="ic-acts">
+      <button class="ic-btn" onclick="edItem(${t.id})">✎</button>
+      <button class="ic-btn red" onclick="delItemUI(${t.id})">✕</button>
+    </div>
+  </div>`;
+}
+
+// ── DRAG & DROP ──
+let dragOcc=null;
+function ds(id,e,occ,elId){
+  e.stopPropagation();dragId=id;dragOcc=occ||null;
+  e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',id+'|'+(occ||''));
+  setTimeout(()=>{if(elId)document.getElementById(elId)?.classList.add('dragging');document.body.classList.add('drag-from-cal');},0);
+}
+function ibDrag(id,e){dragId=id;dragOcc=null;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',id+'|');setTimeout(()=>document.getElementById('ib'+id)?.classList.add('dragging'),0);}
+function de(){dragId=null;dragOcc=null;document.body.classList.remove('drag-from-cal');document.querySelectorAll('.dragging').forEach(el=>el.classList.remove('dragging'));document.querySelectorAll('.drop-over').forEach(el=>el.classList.remove('drop-over'));}
+function dov(e,dk){e.preventDefault();e.dataTransfer.dropEffect='move';document.getElementById('day-'+dk)?.classList.add('drop-over');}
+function dlv(dk){document.getElementById('day-'+dk)?.classList.remove('drop-over');}
+function readDrag(e){
+  const raw=e.dataTransfer.getData('text/plain')||'';
+  const [idS,occ]=raw.split('|');
+  const id=Number(idS)||dragId;
+  return {t:items.find(x=>x.id===id),occ:occ||dragOcc||null};
+}
+async function dp(e,dk){
+  e.preventDefault();document.getElementById('day-'+dk)?.classList.remove('drop-over');
+  const {t,occ}=readDrag(e);
+  de();
+  if(!t)return;
+  if(t.recur&&t.date&&occ){
+    // moving one occurrence of a series shifts the whole series
+    const delta=daysBetween(occ,dk);if(!delta)return;
+    t.date=addDays(t.date,delta);if(t.end_date)t.end_date=addDays(t.end_date,delta);
+    t.done_dates=(t.done_dates||[]).map(d=>addDays(d,delta));
+    (t.subtasks||[]).forEach(s=>{if(s.dd)s.dd=s.dd.map(d=>addDays(d,delta));});
+  }else if(t.multiday&&t.end_date&&t.date){const span=daysBetween(t.date,t.end_date);t.date=dk;t.end_date=addDays(dk,span);}
+  else{
+    if(t.multiday&&t.end_date&&!t.date){t.end_date=null;t.multiday=false;}
+    t.date=dk;
+  }
+  renderAll();
+  if(await persist(t))toast(t.recur?'Presunutá celá opakovaná séria':'Presunuté');
+}
+// ── DROP BACK TO INBOX ──
+function inboxDov(e){
+  if(!document.body.classList.contains('drag-from-cal'))return;
+  e.preventDefault();e.dataTransfer.dropEffect='move';document.getElementById('inbox-drop').classList.add('drop-over');
+}
+function inboxDlv(e){
+  const z=document.getElementById('inbox-drop');if(!z.contains(e.relatedTarget))z.classList.remove('drop-over');
+}
+async function dropToInbox(e){
+  e.preventDefault();
+  const {t}=readDrag(e);
+  de();
+  if(!t||!t.date)return;
+  await moveToInbox(t);
+}
+async function moveToInbox(t){
+  t.date=null;t.end_date=null;t.multiday=false;
+  if(!t.inbox_list_id||!inboxLists.some(l=>l.id===t.inbox_list_id))t.inbox_list_id=inboxLists[0]?.id||null;
+  renderAll();
+  if(await persist(t))toast(t.recur?'Opakovaná úloha vrátená do inboxu':'Vrátené do inboxu');
+}
+
+// ── ITEM OPS ──
+async function togItem(id,occ){
+  const t=items.find(t=>t.id===id);if(!t)return;
+  if(t.recur&&occ&&hasDetailCols){
+    const dd=new Set(t.done_dates||[]);dd.has(occ)?dd.delete(occ):dd.add(occ);t.done_dates=[...dd].sort();
+  }else t.done=!t.done;
+  renderAll();await persist(t);
+}
+async function delItemUI(id){
+  const t=items.find(x=>x.id===id);
+  if(!confirm(t&&t.recur?'Zmazať celú opakovanú sériu?':'Zmazať?'))return false;
+  const backup=items.slice();
+  items=items.filter(t=>t.id!==id);if(drawerId===id)closeDrawer();renderAll();setSave('ukladám...','busy');
+  try{await deleteItem(id);setSave('uložené ✓','ok');toast('Zmazané');}
+  catch(e){items=backup;renderAll();setSave('neuložené!','');toast('Nezmazané: '+shortErr(e));}
+  return true;
+}
+function edItem(id){
+  const t=items.find(t=>t.id===id);if(!t)return;
+  editId=id;setType(t.type||'task');populateCatSelect();populateCalSelect();populateListSelect();populateProjSelect();populateContentStatusSelect();
+  document.getElementById('im-txt').value=t.text;
+  document.getElementById('im-cat').value=t.cat||cats[0]?.id||'';
+  document.getElementById('im-cal').value=t.cal_id||calendars[0]?.id||'';
+  document.getElementById('im-proj').value=t.project_id!=null?String(t.project_id):'';
+  // vyčisti polia všetkých typov, aby pri prepnutí typu neostali hodnoty z minulej položky
+  document.getElementById('im-content-status').value='idea';
+  document.getElementById('im-text-status').value='';
+  document.getElementById('im-drive').value='';
+  document.getElementById('im-content-text').value='';
+  document.getElementById('im-content-date').value='';
+  document.getElementById('im-date').value='';
+  document.getElementById('im-time').value='';
+  document.getElementById('im-deadline').value='';
+  document.getElementById('im-multi').checked=false;
+  document.getElementById('im-enddate').value='';
+  document.getElementById('im-ev-date').value='';
+  document.getElementById('im-ev-time').value='';
+  document.getElementById('im-ev-enddate').value='';
+  document.getElementById('im-ev-endtime').value='';
+  if(t.type==='content'){
+    document.getElementById('im-content-status').value=contentStatusOf(t);
+    document.getElementById('im-text-status').value=textStatusOf(t);
+    document.getElementById('im-content-date').value=t.date||'';
+    document.getElementById('im-drive').value=t.drive_link||'';
+    document.getElementById('im-content-text').value=t.content_text||'';
+  } else if(t.type==='task'){
+    document.getElementById('im-date').value=t.date||'';
+    document.getElementById('im-time').value=t.time_start||'';
+    document.getElementById('im-deadline').value=t.deadline||'';
+    document.getElementById('im-multi').checked=!!t.multiday;
+    document.getElementById('im-enddate').value=t.end_date||'';
+    document.getElementById('im-enddate-wrap').style.display=t.multiday?'':'none';
+    document.getElementById('im-inbox-list-wrap').style.display=t.date?'none':'';
+    document.getElementById('im-inbox-list').value=t.inbox_list_id||inboxLists[0]?.id||'';
+  } else {
+    document.getElementById('im-ev-date').value=t.date||'';
+    document.getElementById('im-ev-time').value=t.time_start||'';
+    document.getElementById('im-ev-enddate').value=t.end_date||'';
+    document.getElementById('im-ev-endtime').value='';
+  }
+  document.getElementById('im-recur').value=t.recur||'';
+  document.getElementById('im-recur-end').value=t.recur_end||'';
+  document.getElementById('im-recur-end-wrap').style.display=t.recur?'':'none';
+  document.getElementById('im-title').textContent='Upraviť položku';
+  document.getElementById('im-del').style.display='block';
+  document.getElementById('item-overlay').classList.add('open');
+}
+function openItemModal(date,isInbox){
+  editId=null;setType(imPresetType||'task');populateCatSelect();populateCalSelect();populateListSelect();populateProjSelect();populateContentStatusSelect();
+  document.getElementById('im-proj').value=imPresetProj!=null?String(imPresetProj):'';
+  document.getElementById('im-txt').value='';
+  document.getElementById('im-content-status').value=imPresetContentStatus||'idea';
+  document.getElementById('im-text-status').value='';
+  document.getElementById('im-content-date').value=isInbox?'':date||'';
+  document.getElementById('im-drive').value='';
+  document.getElementById('im-content-text').value='';
+  document.getElementById('im-date').value=isInbox?'':date||'';
+  document.getElementById('im-time').value='';
+  document.getElementById('im-deadline').value='';
+  document.getElementById('im-multi').checked=false;
+  document.getElementById('im-enddate').value='';
+  document.getElementById('im-enddate-wrap').style.display='none';
+  document.getElementById('im-inbox-list-wrap').style.display=isInbox?'':'none';
+  document.getElementById('im-ev-date').value=date||'';
+  document.getElementById('im-ev-time').value='';
+  document.getElementById('im-ev-enddate').value='';
+  document.getElementById('im-ev-endtime').value='';
+  document.getElementById('im-recur').value='';
+  document.getElementById('im-recur-end').value='';
+  document.getElementById('im-recur-end-wrap').style.display='none';
+  if(isInbox&&activeInboxListId!=='all')document.getElementById('im-inbox-list').value=activeInboxListId;
+  document.getElementById('im-title').textContent=isInbox?'Pridať do Inboxu':'Nová položka';
+  document.getElementById('im-del').style.display='none';
+  document.getElementById('item-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('im-txt').focus(),60);
+}
+function closeItemModal(){document.getElementById('item-overlay').classList.remove('open');editId=null;imPresetProj=null;imPresetStatus=null;imPresetType=null;imPresetContentStatus=null;}
+
+function setType(type){
+  // prenes zadaný dátum medzi typmi – dátum úlohy/eventu = dátum publikovania
+  const curDate=document.getElementById('im-date').value||document.getElementById('im-ev-date').value||document.getElementById('im-content-date').value||'';
+  currentItemType=type;
+  document.getElementById('tt-task').classList.toggle('active',type==='task');
+  document.getElementById('tt-event').classList.toggle('active',type==='event');
+  document.getElementById('tt-content').classList.toggle('active',type==='content');
+  // category select is useful for tasks and content (kind of post)
+  document.getElementById('im-cat-wrap').style.display=(type==='task'||type==='content')?'':'none';
+  document.getElementById('im-task-fields').style.display=type==='task'?'':'none';
+  document.getElementById('im-event-fields').style.display=type==='event'?'':'none';
+  document.getElementById('im-content-fields').style.display=type==='content'?'':'none';
+  document.getElementById('im-recur-block').style.display=type==='content'?'none':'';
+  if(type==='content'){
+    document.getElementById('im-content-sqlhint').style.display=hasContentCols?'none':'';
+    document.getElementById('im-content-notmiss').style.display='';
+  }
+  document.getElementById('im-txt-label').textContent=type==='event'?'Názov eventu':(type==='content'?'Názov obsahu':'Text úlohy');
+  // po prepnutí typu ponúkni ten istý dátum (ak cieľové pole je prázdne)
+  if(curDate){
+    if(type==='task'&&!document.getElementById('im-date').value)document.getElementById('im-date').value=curDate;
+    if(type==='event'&&!document.getElementById('im-ev-date').value)document.getElementById('im-ev-date').value=curDate;
+    if(type==='content'&&!document.getElementById('im-content-date').value)document.getElementById('im-content-date').value=curDate;
+  }
+}
+function populateContentStatusSelect(){
+  document.getElementById('im-content-status').innerHTML=CONTENT_STAGES.map(s=>`<option value="${s.id}">${esc(s.label)}</option>`).join('');
+  const tsSel=document.getElementById('im-text-status');
+  tsSel.innerHTML=TEXT_STAGES.map(s=>`<option value="${s.id}">${esc(s.label)}</option>`).join('');
+  tsSel.closest('.fg').style.display=hasTextStatus?'':'none';
+}
+function onMultiChange(){document.getElementById('im-enddate-wrap').style.display=document.getElementById('im-multi').checked?'':'none';}
+document.getElementById('im-date').addEventListener('input',function(){document.getElementById('im-inbox-list-wrap').style.display=this.value?'none':'';});
+document.getElementById('im-recur').addEventListener('change',function(){document.getElementById('im-recur-end-wrap').style.display=this.value?'':'none';});
+
+function populateCatSelect(){document.getElementById('im-cat').innerHTML=cats.map(c=>`<option value="${c.id}">${c.icon} ${esc(c.label)}</option>`).join('');}
+function populateCalSelect(){document.getElementById('im-cal').innerHTML=calendars.map(c=>`<option value="${c.id}">${esc(c.label)}</option>`).join('');}
+function populateListSelect(){document.getElementById('im-inbox-list').innerHTML=inboxLists.map(l=>`<option value="${l.id}">${esc(l.label)}</option>`).join('');}
+function populateProjSelect(){
+  document.getElementById('im-proj-row').style.display=hasItemProjectCols?'':'none';
+  document.getElementById('im-proj').innerHTML='<option value="">— Bez projektu —</option>'+projects.map(p=>`<option value="${p.id}">${esc(p.label)}</option>`).join('');
+}
+
+async function saveItem(){
+  const text=document.getElementById('im-txt').value.trim();
+  const cat=document.getElementById('im-cat').value;
+  const cal_id=document.getElementById('im-cal').value;
+  if(!text){document.getElementById('im-txt').focus();return;}
+  const recur=document.getElementById('im-recur').value||null;
+  const recur_end=recur?document.getElementById('im-recur-end').value||null:null;
+  let newData={};
+  if(currentItemType==='task'){
+    const date=document.getElementById('im-date').value;
+    const multi=document.getElementById('im-multi').checked;
+    const endd=document.getElementById('im-enddate').value;
+    if(recur&&!date){toast('Opakovaná úloha potrebuje dátum začiatku');document.getElementById('im-date').focus();return;}
+    if(multi&&(!date||!endd||endd<date)){toast('Viacdňová úloha: vyplň dátum a dátum konca (neskorší)');return;}
+    newData={type:'task',text,cat,cal_id,date:date||null,
+      time_start:document.getElementById('im-time').value||null,
+      deadline:document.getElementById('im-deadline').value||null,
+      end_date:multi?endd:null,
+      multiday:multi,recur,recur_end,
+      inbox_list_id:document.getElementById('im-inbox-list').value||inboxLists[0]?.id||null};
+  } else if(currentItemType==='content'){
+    const date=document.getElementById('im-content-date').value;
+    newData={type:'content',text,cat,cal_id,date:date||null,
+      time_start:null,deadline:null,end_date:null,multiday:false,recur:null,recur_end:null,
+      inbox_list_id:document.getElementById('im-inbox-list')?.value||inboxLists[0]?.id||null,
+      content_status:document.getElementById('im-content-status').value||'idea',
+      text_status:document.getElementById('im-text-status').value||null,
+      drive_link:document.getElementById('im-drive').value.trim()||null,
+      content_text:document.getElementById('im-content-text').value||null};
+  } else {
+    const evDate=document.getElementById('im-ev-date').value,evEnd=document.getElementById('im-ev-enddate').value;
+    if(!evDate){toast('Event potrebuje dátum');document.getElementById('im-ev-date').focus();return;}
+    newData={type:'event',text,cat:'p-event',cal_id,
+      date:evDate,
+      time_start:document.getElementById('im-ev-time').value||null,
+      end_date:evEnd&&evEnd>evDate?evEnd:null,
+      multiday:!!(evEnd&&evEnd>evDate),
+      recur,recur_end,deadline:null,inbox_list_id:null};
+  }
+  if(hasItemProjectCols){const pv=document.getElementById('im-proj').value;newData.project_id=pv?Number(pv):null;}
+  const wasEdit=editId!==null;
+  const presetStatus=imPresetStatus;
+  if(wasEdit){
+    const t=items.find(t=>t.id===editId);if(!t){closeItemModal();return;}
+    const backup={...t};
+    Object.assign(t,newData);
+    closeItemModal();renderAll();
+    if(!(await persist(t))){Object.assign(t,backup);renderAll();return;}
+    toast('Uložené');
+  }else{
+    const item={id:genId(),...newData,done:false,description:'',subtasks:[],done_dates:[],status:presetStatus||null};
+    items.push(item);closeItemModal();renderAll();setSave('ukladám...','busy');
+    try{await saveNewItem(item);setSave('uložené ✓','ok');toast('Pridané');}
+    catch(e){items=items.filter(x=>x!==item);renderAll();setSave('neuložené!','');toast('Neuložené: '+shortErr(e));}
+  }
+}
+async function delEditing(){if(editId===null)return;const id=editId;closeItemModal();await delItemUI(id);}
+
+// ── DETAIL DRAWER (description + subtasks) ──
+function openDrawer(id,occ){
+  const t=items.find(x=>x.id===id);if(!t)return;
+  if(drawerId!==null&&drawerId!==id){flushDesc();flushContentText();}
+  drawerId=id;drawerOcc=(t.recur&&t.date&&occ)?occ:null;
+  renderDrawer();
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-bg').classList.add('open');
+}
+function closeDrawer(){
+  flushDesc();flushContentText();
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-bg').classList.remove('open');
+  drawerId=null;drawerOcc=null;
+}
+function fmtDate(s){if(!s)return '';const d=toDate(s);return d.getDate()+'. '+(d.getMonth()+1)+'. '+d.getFullYear();}
+function renderDrawer(){
+  const t=items.find(x=>x.id===drawerId);if(!t){closeDrawer();return;}
+  const occ=drawerOcc, done=isDone(t,occ), today=todayStr();
+  const isEv=t.type==='event', isContent=t.type==='content', c=getCat(t.cat), cal=getCal(t.cal_id);
+  // head
+  const chip=isEv?`<span class="ic-cat p-event">📅 Event</span>`:(isContent?`<span class="ic-cat ${t.cat}">📸 ${esc(c.label)}</span>`:`<span class="ic-cat ${t.cat}">${esc(c.icon)} ${esc(c.label)}</span>`);
+  document.getElementById('dr-head').innerHTML=`${chip}<span class="dr-chip" style="border-left:3px solid ${cal.color}">${esc(cal.label)}</span>
+    <button class="dr-close" onclick="closeDrawer()" aria-label="Zavrieť">×</button>`;
+  // meta
+  const meta=[];
+  if(occ)meta.push(`<span class="dr-chip">📅 ${fmtDate(occ)}</span>`);
+  else if(t.date)meta.push(`<span class="dr-chip">📅 ${fmtDate(t.date)}${t.multiday&&t.end_date?' – '+fmtDate(t.end_date):''}</span>`);
+  else meta.push(`<span class="dr-chip">📥 V inboxe · ${esc(getList(t.inbox_list_id).label)}</span>`);
+  if(t.time_start)meta.push(`<span class="dr-chip">⏰ ${t.time_start}</span>`);
+  if(t.deadline)meta.push(`<span class="dr-chip${t.deadline<today&&!done?' warn':''}">⚑ Deadline ${fmtDate(t.deadline)}</span>`);
+  if(t.recur)meta.push(`<span class="dr-chip">↻ ${RECUR_LABEL[t.recur]||t.recur}${t.recur_end?' do '+fmtDate(t.recur_end):''}</span>`);
+  // subtasks
+  const subs=t.subtasks||[];
+  const sc=subCount(t,occ);
+  const pct=sc.total?Math.round(sc.done/sc.total*100):0;
+  const subHtml=subs.map((s,i)=>{const sd=isSubDone(s,t,occ);
+    return `<div class="sub-item">
+      <button class="sub-check${sd?' done':''}" onclick="toggleSub(${i})" aria-label="Hotovo">${sd?'✓':''}</button>
+      <input class="sub-txt${sd?' done':''}" value="${esc(s.text)}" onchange="renameSub(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+      <button class="sub-del" onclick="removeSub(${i})" aria-label="Zmazať podúlohu">✕</button>
+    </div>`;}).join('');
+  const note=!hasDetailCols?`<div class="dr-note">Popis a podúlohy sa zatiaľ nedajú uložiť – v Supabase treba spustiť krátky SQL príkaz (poslala som ti ho v chate). Potom obnov stránku.</div>`:'';
+  const textStatusBlock=(isContent&&hasTextStatus)?`
+    <div class="dr-label">Stav textu</div>
+    <div class="dr-cstatus">${TEXT_STAGES.map(s=>`<button class="dr-cst${textStatusOf(t)===s.id?' on':''}" style="--sc:${s.c}" onclick="setTextStatus('${s.id}')">${s.label}</button>`).join('')}</div>`:'';
+  const contentBlock=isContent?`
+    <div class="dr-label">Stav obsahu</div>
+    <div class="dr-cstatus">${CONTENT_STAGES.map(s=>`<button class="dr-cst${contentStatusOf(t)===s.id?' on':''}" style="--sc:${s.c}" onclick="setContentStatus('${s.id}')">${s.label}</button>`).join('')}</div>
+    ${textStatusBlock}
+    <div class="dr-label">Odkaz na Google Drive</div>
+    <input class="dr-input" id="dr-drive" type="url" placeholder="https://drive.google.com/..." value="${esc(t.drive_link||'')}" onchange="changeDriveLink(this.value)" ${hasContentCols?'':'disabled'}>
+    ${t.drive_link?`<a class="dr-drive-open" href="${esc(t.drive_link)}" target="_blank" rel="noopener">🔗 Otvoriť priečinok</a>`:''}
+    <div class="dr-label">Text obsahu</div>
+    <textarea class="dr-desc" id="dr-ctext" placeholder="Caption, scenár, hashtagy…" oninput="contentTextInput(this.value)" onblur="flushContentText()" ${hasContentCols?'':'disabled'}>${esc(t.content_text||'')}</textarea>`:'';
+  const recurNote=t.recur&&occ?`<div class="dr-recur-note">Opakovaná položka: odškrtnutie platí len pre ${fmtDate(occ)}, text, popis a zoznam podúloh sú spoločné pre celú sériu.</div>`:'';
+  document.getElementById('dr-body').innerHTML=`
+    <textarea class="dr-title${done?' done':''}" id="dr-title" rows="1" onchange="renameItem(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${esc(t.text)}</textarea>
+    <div class="dr-meta">${meta.join('')}</div>
+    ${recurNote}
+    ${hasItemProjectCols?`<div class="dr-label">Projekt</div>
+    <select class="dr-proj" id="dr-proj" onchange="changeDrawerProject(this.value)">
+      <option value="">— Bez projektu —</option>
+      ${projects.map(p=>`<option value="${p.id}"${t.project_id===p.id?' selected':''}>${esc(p.label)}</option>`).join('')}
+    </select>`:''}
+    ${contentBlock}
+    <div class="dr-label">Popis</div>
+    <textarea class="dr-desc" id="dr-desc" placeholder="Poznámky, odkazy, texty k postu…" oninput="descInput(this.value)" onblur="flushDesc()" ${hasDetailCols?'':'disabled'}>${esc(t.description||'')}</textarea>
+    <div class="dr-label">Podúlohy ${sc.total?`<span class="dr-count">${sc.done}/${sc.total}</span><span class="dr-progress"><span style="width:${pct}%"></span></span>`:''}</div>
+    <div id="dr-subs">${subHtml}</div>
+    <div class="sub-add"><input id="dr-sub-new" placeholder="+ Pridať podúlohu (Enter)" onkeydown="if(event.key==='Enter')addSub()" ${hasDetailCols?'':'disabled'}></div>
+    ${note}`;
+  autoGrow(document.getElementById('dr-title'));
+  // footer
+  const f=[];
+  if(!isContent)f.push(`<button class="mb pri" onclick="togItem(${t.id},${occ?`'${occ}'`:'null'})">${done?'↩ Označiť ako nehotové':'✓ Hotovo'}</button>`);
+  f.push(`<button class="mb" onclick="const id=drawerId;closeDrawer();edItem(id)">✎ Upraviť dátum a detaily</button>`);
+  if(hasContentCols&&t.type==='task'&&!t.recur)f.push(`<button class="mb" onclick="convertToContent(drawerId)" title="Presunie túto úlohu do plánovača obsahu (📸 Obsah)">📸 Presunúť do Obsahu</button>`);
+  if(isContent)f.push(`<button class="mb" onclick="convertToTask(drawerId)" title="Zmení obsah späť na bežnú úlohu">↩ Späť na úlohu</button>`);
+  if(t.date&&!isEv)f.push(`<button class="mb" onclick="moveToInbox(items.find(x=>x.id===drawerId))">📥 Späť do inboxu</button>`);
+  f.push(`<button class="mb del" style="margin-left:auto" onclick="delItemUI(drawerId)">Zmazať</button>`);
+  document.getElementById('dr-foot').innerHTML=f.join('');
+}
+function autoGrow(el){if(!el)return;el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+function drawerItem(){return items.find(x=>x.id===drawerId);}
+async function renameItem(v){
+  const t=drawerItem();v=v.trim();if(!t)return;
+  if(!v){renderDrawer();return;}
+  if(v===t.text)return;
+  t.text=v;renderAll();await persist(t);
+}
+async function changeDrawerProject(v){
+  const t=drawerItem();if(!t)return;
+  t.project_id=v?Number(v):null;renderAll();await persist(t);
+}
+async function setContentStatus(id){
+  const t=drawerItem();if(!t)return;
+  if(contentStatusOf(t)===id)return;
+  const backup=t.content_status;t.content_status=id;renderAll();
+  if(!(await persist(t))){t.content_status=backup;renderAll();}
+}
+async function setTextStatus(id){
+  const t=drawerItem();if(!t)return;
+  if(textStatusOf(t)===id)return;
+  const backup=t.text_status;t.text_status=id;renderAll();
+  if(!(await persist(t))){t.text_status=backup;renderAll();}
+}
+// presun úlohy do plánovača obsahu (a späť)
+async function convertToContent(id){
+  const t=items.find(x=>x.id===id);if(!t||t.type!=='content'&&t.type!=='task')return;
+  if(t.type==='content')return;
+  const backup={type:t.type,content_status:t.content_status,recur:t.recur,recur_end:t.recur_end,multiday:t.multiday,end_date:t.end_date,deadline:t.deadline};
+  t.type='content';
+  t.content_status=t.content_status||(t.done?'published':'idea');
+  t.recur=null;t.recur_end=null;t.multiday=false;t.end_date=null;t.deadline=null;
+  renderAll();
+  if(await persist(t)){toast('Presunuté do Obsahu 📸 (nájdeš ho v záložke Obsah)');}
+  else{Object.assign(t,backup);renderAll();}
+}
+async function convertToTask(id){
+  const t=items.find(x=>x.id===id);if(!t||t.type!=='content')return;
+  const backup={type:t.type};
+  t.type='task';
+  renderAll();
+  if(await persist(t)){toast('Zmenené späť na úlohu ✓');}
+  else{Object.assign(t,backup);renderAll();}
+}
+async function changeDriveLink(v){
+  const t=drawerItem();if(!t)return;
+  v=v.trim();if((t.drive_link||'')===v)return;
+  t.drive_link=v||null;renderAll();await persist(t);
+}
+let ctTimer=null,ctDirty=false;
+function contentTextInput(v){
+  const t=drawerItem();if(!t)return;
+  t.content_text=v;ctDirty=true;
+  clearTimeout(ctTimer);ctTimer=setTimeout(flushContentText,900);
+}
+async function flushContentText(){
+  clearTimeout(ctTimer);
+  if(!ctDirty)return;ctDirty=false;
+  const t=drawerItem();if(!t)return;
+  await persist(t);
+}
+let descTimer=null,descDirty=false;
+function descInput(v){
+  const t=drawerItem();if(!t)return;
+  t.description=v;descDirty=true;
+  clearTimeout(descTimer);descTimer=setTimeout(flushDesc,900);
+}
+async function flushDesc(){
+  clearTimeout(descTimer);
+  if(!descDirty)return;descDirty=false;
+  const t=drawerItem();if(!t)return;
+  await persist(t);
+  if(currentView==='inbox')renderInboxPage();
+}
+async function saveSubs(t){
+  renderAll();
+  await persist(t);
+}
+function subId(){return 's'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+async function addSub(){
+  const inp=document.getElementById('dr-sub-new');const v=inp.value.trim();if(!v)return;
+  const t=drawerItem();if(!t)return;
+  t.subtasks=[...(t.subtasks||[]),{id:subId(),text:v,done:false,dd:[]}];
+  await saveSubs(t);
+  document.getElementById('dr-sub-new')?.focus();
+}
+async function toggleSub(i){
+  const t=drawerItem();if(!t)return;const s=t.subtasks[i];if(!s)return;
+  if(t.recur&&drawerOcc){const dd=new Set(s.dd||[]);dd.has(drawerOcc)?dd.delete(drawerOcc):dd.add(drawerOcc);s.dd=[...dd];}
+  else s.done=!s.done;
+  await saveSubs(t);
+}
+async function renameSub(i,v){
+  const t=drawerItem();if(!t)return;const s=t.subtasks[i];if(!s)return;
+  v=v.trim();if(!v){return removeSub(i);}
+  s.text=v;await saveSubs(t);
+}
+async function removeSub(i){
+  const t=drawerItem();if(!t)return;
+  t.subtasks=t.subtasks.filter((_,j)=>j!==i);await saveSubs(t);
+}
+
+// ── FILTER EDITOR ──
+let editingCats=[];
+function openFilterEditor(){editingCats=JSON.parse(JSON.stringify(cats));renderFeList();document.getElementById('fe-overlay').classList.add('open');}
+function closeFilterEditor(){document.getElementById('fe-overlay').classList.remove('open');}
+function renderFeList(){
+  document.getElementById('fe-list').innerHTML=editingCats.map((c,i)=>`
+    <div class="edit-item">
+      <input type="color" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--border2);cursor:pointer;padding:0;flex-shrink:0" value="${c.bg}" onchange="editingCats[${i}].bg=this.value" title="Pozadie">
+      <input type="color" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--border2);cursor:pointer;padding:0;flex-shrink:0" value="${c.color}" onchange="editingCats[${i}].color=this.value" title="Text">
+      <input class="ei-icon" value="${esc(c.icon)}" oninput="editingCats[${i}].icon=this.value" maxlength="4">
+      <input class="ei-name" value="${esc(c.label)}" oninput="editingCats[${i}].label=this.value" placeholder="Názov">
+      <button class="ei-del" onclick="editingCats.splice(${i},1);renderFeList()">✕</button>
+    </div>`).join('');
+}
+function addFilterCat(){editingCats.push({id:'cat-'+Date.now(),label:'Nová',icon:'⭐',bg:'#FFF9E6',color:'#7A5500',border:'#FFD966'});renderFeList();}
+async function saveFilterEditor(){
+  cats=editingCats.map(c=>({...c,border:c.border||c.bg}));applyCatStyles();closeFilterEditor();renderAll();
+  setSave('ukladám...','busy');try{await saveCatsToDB();setSave('uložené ✓','ok');toast('Kategórie uložené');}catch(e){setSave('chyba!','');}
+}
+
+// ── CAL MANAGER ──
+let editingCals=[];
+function openCalManager(){editingCals=JSON.parse(JSON.stringify(calendars));renderCmList();document.getElementById('cm-overlay').classList.add('open');}
+function closeCalManager(){document.getElementById('cm-overlay').classList.remove('open');}
+function renderCmList(){
+  document.getElementById('cm-list').innerHTML=editingCals.map((c,i)=>`
+    <div class="edit-item">
+      <input type="color" style="width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;padding:0;flex-shrink:0" value="${c.color}" onchange="editingCals[${i}].color=this.value">
+      <input class="ei-name" value="${esc(c.label)}" oninput="editingCals[${i}].label=this.value" placeholder="Názov">
+      <button class="ei-del" onclick="editingCals.splice(${i},1);renderCmList()">✕</button>
+    </div>`).join('');
+}
+function addCalendar(){editingCals.push({id:'cal-'+Date.now(),label:'Nový kalendár',color:'#666'});renderCmList();}
+async function saveCalManager(){
+  calendars=editingCals;closeCalManager();renderAll();setSave('ukladám...','busy');
+  try{await saveCalendarsToDB();setSave('uložené ✓','ok');toast('Kalendáre uložené');}catch(e){setSave('chyba!','');}
+}
+
+// ── LIST MANAGER ──
+let editingLists=[];
+function openListManager(){editingLists=JSON.parse(JSON.stringify(inboxLists));renderLmList();document.getElementById('lm-overlay').classList.add('open');}
+function closeListManager(){document.getElementById('lm-overlay').classList.remove('open');}
+function renderLmList(){
+  document.getElementById('lm-list').innerHTML=editingLists.map((l,i)=>`
+    <div class="edit-item">
+      <input type="color" style="width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;padding:0;flex-shrink:0" value="${l.color}" onchange="editingLists[${i}].color=this.value">
+      <input class="ei-name" value="${esc(l.label)}" oninput="editingLists[${i}].label=this.value" placeholder="Názov zoznamu">
+      <button class="ei-del" onclick="editingLists.splice(${i},1);renderLmList()">✕</button>
+    </div>`).join('');
+}
+function addList(){editingLists.push({id:'list-'+Date.now(),label:'Nový zoznam',color:'#666'});renderLmList();}
+async function saveListManager(){
+  inboxLists=editingLists;closeListManager();renderAll();setSave('ukladám...','busy');
+  try{await saveListsToDB();setSave('uložené ✓','ok');toast('Zoznamy uložené');}catch(e){setSave('chyba!','');}
+}
+
+// ── CAMPAIGNS (kampane / projekty) ──
+const SQL_PROJECTS=`-- Projekty pre MakerSpace BA Planner (spusti raz)
+create table if not exists projects (
+  id bigint primary key,
+  user_id uuid not null default auth.uid(),
+  label text not null,
+  color text,
+  description text,
+  notes text,
+  grp text,
+  start_date date,
+  end_date date,
+  sort_order int default 0,
+  created_at timestamptz default now()
+);
+alter table projects enable row level security;
+drop policy if exists "projects_sel" on projects;
+drop policy if exists "projects_ins" on projects;
+drop policy if exists "projects_upd" on projects;
+drop policy if exists "projects_del" on projects;
+create policy "projects_sel" on projects for select using (auth.uid() = user_id);
+create policy "projects_ins" on projects for insert with check (auth.uid() = user_id);
+create policy "projects_upd" on projects for update using (auth.uid() = user_id);
+create policy "projects_del" on projects for delete using (auth.uid() = user_id);
+
+alter table projects add column if not exists notes text;
+alter table projects add column if not exists grp text;
+alter table items add column if not exists project_id bigint;
+alter table items add column if not exists status text;
+alter table items add column if not exists content_status text;
+alter table items add column if not exists drive_link text;
+alter table items add column if not exists content_text text;
+alter table items add column if not exists text_status text;
+
+notify pgrst, 'reload schema';`;
+// malý príkaz len pre poznámky (ak už projekty existujú)
+const SQL_NOTES=`alter table projects add column if not exists notes text;
+notify pgrst, 'reload schema';`;
+// malý príkaz len pre skupiny projektov
+const SQL_GROUPS=`alter table projects add column if not exists grp text;
+notify pgrst, 'reload schema';`;
+// malý príkaz len pre obsahové plánovanie (stav, Drive odkaz, text)
+const SQL_CONTENT=`alter table items add column if not exists content_status text;
+alter table items add column if not exists drive_link text;
+alter table items add column if not exists content_text text;
+alter table items add column if not exists text_status text;
+notify pgrst, 'reload schema';`;
+
+function genNoteId(){return 'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+// notes stored as JSON array in projects.notes; migrate old single-string notes
+function parseNotes(raw){
+  if(!raw)return [];
+  if(Array.isArray(raw))return raw.map(n=>({id:n.id||genNoteId(),title:n.title||'Bez názvu',body:n.body||''}));
+  if(typeof raw==='string'){
+    const s=raw.trim();if(!s)return [];
+    if(s[0]==='['){try{const j=JSON.parse(s);if(Array.isArray(j))return j.map(n=>({id:n.id||genNoteId(),title:n.title||'Bez názvu',body:n.body||''}));}catch(e){}}
+    return [{id:genNoteId(),title:'Poznámky',body:raw}]; // starý jednoduchý text
+  }
+  return [];
+}
+function getProj(id){return projects.find(p=>p.id===id)||null;}
+function projItems(id){return items.filter(t=>t.project_id===id&&t.type!=='content');}
+function projProgress(id){const its=projItems(id);const done=its.filter(t=>t.done).length;return {total:its.length,done,pct:its.length?Math.round(done/its.length*100):0};}
+
+function renderCampaigns(){
+  const el=document.getElementById('view-campaigns');
+  if(!hasProjects||!hasItemProjectCols){el.innerHTML=campaignSetupHTML();return;}
+  if(activeProjectId&&getProj(activeProjectId))renderCampaignDetail(el);
+  else {activeProjectId=null;renderCampaignOverview(el);}
+}
+function campaignSetupHTML(){
+  return `<div class="camp-wrap"><div class="camp-setup">
+    <div class="camp-setup-ic">🎯</div>
+    <h2>Projekty – ešte jeden krôčik</h2>
+    <p>Aby si mohla zoskupovať úlohy a eventy do projektov a mať nástenku, treba <b>raz</b> spustiť krátky príkaz v Supabase. Netreba nič programovať – len skopírovať a vložiť.</p>
+    <ol class="camp-steps">
+      <li>Otvor <b>Supabase</b> → tvoj projekt → vľavo <b>SQL Editor</b> → <b>New query</b>.</li>
+      <li>Klikni dole na <b>Skopírovať SQL</b> a vlož ho (Ctrl+V).</li>
+      <li>Stlač <b>Run</b>. Potom sa sem vráť a klikni <b>Načítať</b> (alebo obnov stránku Ctrl+Shift+R).</li>
+    </ol>
+    <pre class="camp-sql">${esc(SQL_PROJECTS)}</pre>
+    <div class="camp-setup-btns">
+      <button class="hbtn pri" onclick="copySql()">📋 Skopírovať SQL</button>
+      <button class="hbtn" onclick="initApp()">↻ Už som to spustila – načítať</button>
+    </div>
+  </div></div>`;
+}
+async function copySql(){try{await navigator.clipboard.writeText(SQL_PROJECTS);toast('SQL skopírovaný – vlož ho v Supabase (Ctrl+V)');}catch(e){toast('Skopíruj text SQL ručne (označ + Ctrl+C)');}}
+
+function projCardHTML(p){
+  const pr=projProgress(p.id);
+  const range=(p.start_date||p.end_date)?`<div class="camp-card-dates">📅 ${p.start_date?fmtDate(p.start_date):'…'} – ${p.end_date?fmtDate(p.end_date):'…'}</div>`:'';
+  return `<div class="camp-card" onclick="openProject(${p.id})" style="--cc:${p.color}">
+    <div class="camp-card-top"></div>
+    <div class="camp-card-body">
+      <div class="camp-card-title">${esc(p.label)}</div>
+      ${p.description?`<div class="camp-card-desc">${esc(p.description)}</div>`:''}
+      ${range}
+      <div class="camp-prog"><span style="width:${pr.pct}%;background:${p.color}"></span></div>
+      <div class="camp-card-meta"><span>${pr.done}/${pr.total} hotových</span><span>${pr.pct}%</span></div>
+    </div></div>`;
+}
+let lastGroupKeys=[];
+function renderCampaignOverview(el){
+  let h=`<div class="camp-wrap">
+    <div class="camp-head"><h2>📂 Projekty</h2><button class="hbtn pri" onclick="openProjModal()">+ Nový projekt</button></div>`;
+  if(hasProjects&&!hasProjGroups&&projects.length){
+    h+=`<div class="proj-notes-setup" style="margin-bottom:16px">🗂️ Chceš <b>skupiny projektov</b>? Spusti raz krátky SQL v Supabase.
+      <button class="mb" style="margin-left:6px" onclick="copyGroupsSql()">📋 Skopírovať SQL</button></div>`;
+  }
+  if(!projects.length){
+    h+=`<div class="camp-empty"><div class="camp-empty-ic">📣</div>
+      <p>Zatiaľ nemáš žiadne projekty.<br>Vytvor si prvý – napr. „Rebranding webu", „Vianočná kampaň" alebo „Nábor na workshopy".</p>
+      <button class="hbtn pri" onclick="openProjModal()">+ Vytvoriť prvý projekt</button></div>`;
+  }else if(hasProjGroups&&projects.some(p=>p.grp&&p.grp.trim())){
+    // zoskupené podľa skupiny (poradie podľa prvého výskytu, „Bez skupiny" na konci)
+    const map={},order=[];
+    projects.forEach(p=>{const k=(p.grp&&p.grp.trim())?p.grp.trim():'__none';if(!map[k]){map[k]=[];order.push(k);}map[k].push(p);});
+    order.sort((a,b)=>(a==='__none'?1:0)-(b==='__none'?1:0));
+    lastGroupKeys=order;
+    order.forEach((k,i)=>{
+      const label=k==='__none'?'Ostatné (bez skupiny)':k;
+      const collapsed=projGroupCollapsed.has(k);
+      h+=`<div class="camp-group">
+        <button class="camp-group-hdr" onclick="toggleGroup(${i})">
+          <span class="camp-group-caret">${collapsed?'▸':'▾'}</span>
+          <span class="camp-group-name">${esc(label)}</span>
+          <span class="camp-group-count">${map[k].length}</span>
+        </button>
+        ${collapsed?'':`<div class="camp-grid">${map[k].map(projCardHTML).join('')}</div>`}
+      </div>`;
+    });
+  }else{
+    h+=`<div class="camp-grid">${projects.map(projCardHTML).join('')}</div>`;
+  }
+  h+=`</div>`;el.innerHTML=h;
+}
+function toggleGroup(i){
+  const k=lastGroupKeys[i];if(k==null)return;
+  if(projGroupCollapsed.has(k))projGroupCollapsed.delete(k);else projGroupCollapsed.add(k);
+  try{localStorage.setItem('msba-grpcollapsed',JSON.stringify([...projGroupCollapsed]));}catch(e){}
+  renderCampaigns();
+}
+function openProject(id){activeProjectId=id;activeNoteId=null;projNoteMode='edit';renderCampaigns();}
+function backToCampaigns(){activeProjectId=null;renderCampaigns();}
+
+function renderCampaignDetail(el){
+  const p=getProj(activeProjectId);if(!p){backToCampaigns();return;}
+  const pr=projProgress(p.id);
+  const range=(p.start_date||p.end_date)?`<span class="camp-dt-range">📅 ${p.start_date?fmtDate(p.start_date):'…'} – ${p.end_date?fmtDate(p.end_date):'…'}</span>`:'';
+  let h=`<div class="camp-wrap">
+    <div class="camp-detail-head"><button class="camp-back" onclick="backToCampaigns()">‹ Všetky projekty</button></div>
+    <div class="camp-detail-title" style="--cc:${p.color}">
+      <span class="camp-dot"></span><h2>${esc(p.label)}</h2>${range}
+      <div class="camp-detail-acts">
+        <button class="mb" onclick="copyProjectMd(${p.id})" title="Skopíruje projekt ako Markdown – do ChatGPT / Obsidianu">📋 Markdown</button>
+        <button class="mb" onclick="openProjModal(${p.id})">✎ Upraviť</button>
+      </div>
+    </div>
+    ${p.description?`<p class="camp-detail-desc">${esc(p.description)}</p>`:''}
+    <div class="camp-detail-prog">
+      <div class="camp-prog big"><span style="width:${pr.pct}%;background:${p.color}"></span></div>
+      <span class="camp-detail-progtxt">${pr.done}/${pr.total} hotových · ${pr.pct}%</span>
+    </div>
+    <div class="view-seg proj-seg">
+      <button class="${projSubView==='board'?'on':''}" onclick="setProjView('board')">📋 Nástenka</button>
+      <button class="${projSubView==='notes'?'on':''}" onclick="setProjView('notes')">📝 Poznámky</button>
+    </div>`;
+  if(projSubView==='notes'){
+    h+=projNotesHTML(p);
+  }else{
+    h+=`<div class="kanban">`;
+    KANBAN.forEach(col=>{
+      const colItems=projItems(p.id).filter(t=>statusOf(t)===col.id);
+      h+=`<div class="kan-col" ondragover="kanOver(event)" ondragleave="kanLeave(event)" ondrop="kanDrop(event,'${col.id}')">
+        <div class="kan-colhdr"><span>${col.label}</span><span class="kan-count">${colItems.length}</span></div>
+        <div class="kan-body">`;
+      colItems.forEach(t=>{h+=kanCard(t);});
+      h+=`<button class="kan-add" onclick="addToCampaign(${p.id},'${col.id}')">+ Pridať</button></div></div>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`</div>`;el.innerHTML=h;
+}
+function setProjView(v){
+  if(projSubView==='notes'&&v!=='notes')flushProjNote();
+  projSubView=v;try{localStorage.setItem('msba-projview',v);}catch(e){}
+  renderCampaigns();
+}
+function setNoteMode(m){
+  if(projNoteMode==='edit'&&m!=='edit')flushProjNote();
+  projNoteMode=m;renderCampaigns();
+}
+
+// ── PROJECT NOTES – viac poznámok s prepojeniami ([[odkaz]]) ──
+function activeNote(p){
+  const ns=p.notes||[];
+  let n=ns.find(x=>x.id===activeNoteId);
+  if(!n)n=ns[0]||null;
+  activeNoteId=n?n.id:null;
+  return n;
+}
+function projNotesHTML(p){
+  if(!hasProjNotes){
+    return `<div class="proj-notes-setup">📝 <b>Poznámky</b> sa zapnú po jednom krátkom SQL príkaze v Supabase.
+      <button class="mb" style="margin-left:6px" onclick="copyNotesSql()">📋 Skopírovať SQL</button></div>`;
+  }
+  const ns=p.notes||[];
+  const note=activeNote(p);
+  // ľavý zoznam poznámok
+  let list=`<aside class="notes-list">
+    <button class="notes-new" onclick="addNote(${p.id})">+ Nová poznámka</button>
+    <div class="notes-items">`;
+  if(!ns.length)list+=`<div class="notes-list-empty">Žiadne poznámky</div>`;
+  else ns.forEach(n=>{
+    list+=`<button class="notes-item${n.id===activeNoteId?' on':''}" data-nid="${n.id}" onclick="selectNote('${n.id}')">
+      <span class="notes-item-ttl">${esc(n.title||'Bez názvu')}</span></button>`;
+  });
+  list+=`</div></aside>`;
+  // pravá strana – editor / náhľad
+  let main;
+  if(!note){
+    main=`<section class="notes-main"><div class="notes-empty">
+      <div class="notes-empty-ic">📝</div>
+      <p>Zatiaľ žiadna poznámka.<br>Vytvor si prvú – napr. „Nápady na posty", „Texty", „Brief pre ChatGPT".</p>
+      <button class="hbtn pri" onclick="addNote(${p.id})">+ Nová poznámka</button>
+    </div></section>`;
+  }else{
+    const titles=ns.map(n=>n.title).filter(t=>t&&t!==note.title);
+    const body=projNoteMode==='preview'
+      ? `<div class="md-preview">${mdToHtml(note.body||'')}</div>`
+      : `<textarea class="note-body" id="note-body" placeholder="Píš si tu… Funguje Markdown:&#10;# Nadpis&#10;- odrážka&#10;- [ ] úloha&#10;**tučné**, *kurzíva*&#10;&#10;Prepoj inú poznámku cez [[Názov poznámky]]." oninput="noteBodyInput(this.value)" onblur="flushProjNote()">${esc(note.body||'')}</textarea>`;
+    main=`<section class="notes-main">
+      <div class="notes-main-bar">
+        <input class="note-title" id="note-title" value="${esc(note.title||'')}" placeholder="Názov poznámky" oninput="noteTitleInput(this.value)" onblur="flushProjNote()">
+        <div class="view-seg mini">
+          <button class="${projNoteMode==='edit'?'on':''}" onclick="setNoteMode('edit')">✏️ Písať</button>
+          <button class="${projNoteMode==='preview'?'on':''}" onclick="setNoteMode('preview')">👁 Náhľad</button>
+        </div>
+        <button class="mb note-del" onclick="delNote(${p.id},'${note.id}')" title="Zmazať poznámku">🗑</button>
+      </div>
+      ${body}
+      <div class="notes-foot">
+        <span class="proj-notes-hint">Markdown · prepoj inú poznámku cez [[Názov]]</span>
+        <button class="mb" onclick="copyProjectMd(${p.id})">📋 Skopírovať do ChatGPT/Obsidian</button>
+      </div>
+    </section>`;
+  }
+  return `<div class="notes-app">${list}${main}</div>`;
+}
+function selectNote(id){flushProjNote();activeNoteId=id;projNoteMode='edit';renderCampaigns();}
+function addNote(pid){
+  const p=getProj(pid);if(!p)return;flushProjNote();
+  if(!Array.isArray(p.notes))p.notes=[];
+  const n={id:genNoteId(),title:'Nová poznámka',body:''};
+  p.notes.push(n);activeNoteId=n.id;projNoteMode='edit';projNoteDirty=true;
+  renderCampaigns();flushProjNote();
+}
+async function delNote(pid,noteId){
+  const p=getProj(pid);if(!p)return;
+  const n=(p.notes||[]).find(x=>x.id===noteId);if(!n)return;
+  if(!confirm(`Zmazať poznámku „${n.title||'Bez názvu'}"?`))return;
+  const backup=p.notes.slice();
+  p.notes=p.notes.filter(x=>x.id!==noteId);
+  if(activeNoteId===noteId)activeNoteId=p.notes[0]?p.notes[0].id:null;
+  projNoteDirty=true;renderCampaigns();
+  setSave('ukladám...','busy');
+  try{await updateProject(p);setSave('uložené ✓','ok');projNoteDirty=false;toast('Poznámka zmazaná');}
+  catch(e){p.notes=backup;renderCampaigns();setSave('neuložené!','');toast('Neuložené: '+shortErr(e));}
+}
+function noteBodyInput(v){const p=getProj(activeProjectId);if(!p)return;const n=(p.notes||[]).find(x=>x.id===activeNoteId);if(!n)return;n.body=v;projNoteDirty=true;clearTimeout(projNoteTimer);projNoteTimer=setTimeout(flushProjNote,800);}
+function noteTitleInput(v){const p=getProj(activeProjectId);if(!p)return;const n=(p.notes||[]).find(x=>x.id===activeNoteId);if(!n)return;n.title=v;projNoteDirty=true;const li=document.querySelector('.notes-item.on .notes-item-ttl');if(li)li.textContent=v||'Bez názvu';clearTimeout(projNoteTimer);projNoteTimer=setTimeout(flushProjNote,800);}
+// klik na [[odkaz]] – otvor poznámku s daným názvom (ak nie je, vytvor ju)
+function openNoteByTitle(title){
+  const p=getProj(activeProjectId);if(!p)return;
+  flushProjNote();
+  let n=(p.notes||[]).find(x=>(x.title||'').trim().toLowerCase()===title.trim().toLowerCase());
+  if(!n){n={id:genNoteId(),title:title.trim(),body:''};if(!Array.isArray(p.notes))p.notes=[];p.notes.push(n);projNoteDirty=true;}
+  activeNoteId=n.id;projNoteMode='edit';renderCampaigns();flushProjNote();
+}
+// malý, bezpečný Markdown → HTML prevod (obsah escapovaný pred formátovaním)
+function mdToHtml(src){
+  if(!src||!src.trim())return '<p class="md-empty">Zatiaľ žiadne poznámky. Prepni na „Písať" a začni.</p>';
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline=s=>{
+    s=esc(s);
+    s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+    s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    s=s.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g,'$1<em>$2</em>');
+    s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+    s=s.replace(/\[\[([^\]]+)\]\]/g,(mm,t)=>`<a class="wikilink" data-wl="${t.replace(/"/g,'&quot;')}">${t}</a>`); // t je už HTML-escapované vyššie
+    return s;
+  };
+  const lines=src.split(/\r?\n/);
+  let html='',inUl=false,inOl=false,inCode=false,code='',m;
+  const closeLists=()=>{if(inUl){html+='</ul>';inUl=false;}if(inOl){html+='</ol>';inOl=false;}};
+  for(const raw of lines){
+    if(/^```/.test(raw)){if(inCode){html+='<pre>'+esc(code)+'</pre>';code='';inCode=false;}else{closeLists();inCode=true;}continue;}
+    if(inCode){code+=raw+'\n';continue;}
+    if(/^\s*$/.test(raw)){closeLists();continue;}
+    if(m=raw.match(/^(#{1,6})\s+(.*)$/)){closeLists();const l=m[1].length;html+='<h'+l+'>'+inline(m[2])+'</h'+l+'>';continue;}
+    if(m=raw.match(/^\s*[-*]\s+\[([ xX])\]\s+(.*)$/)){if(!inUl){closeLists();html+='<ul class="md-task">';inUl=true;}const d=m[1].toLowerCase()==='x';html+='<li class="'+(d?'done':'')+'"><span class="md-box">'+(d?'☑':'☐')+'</span> '+inline(m[2])+'</li>';continue;}
+    if(m=raw.match(/^\s*[-*]\s+(.*)$/)){if(!inUl){closeLists();html+='<ul>';inUl=true;}html+='<li>'+inline(m[1])+'</li>';continue;}
+    if(m=raw.match(/^\s*\d+\.\s+(.*)$/)){if(!inOl){closeLists();html+='<ol>';inOl=true;}html+='<li>'+inline(m[1])+'</li>';continue;}
+    if(m=raw.match(/^>\s?(.*)$/)){closeLists();html+='<blockquote>'+inline(m[1])+'</blockquote>';continue;}
+    closeLists();html+='<p>'+inline(raw)+'</p>';
+  }
+  if(inCode)html+='<pre>'+esc(code)+'</pre>';
+  closeLists();
+  return html;
+}
+let projNoteTimer=null,projNoteDirty=false;
+async function flushProjNote(){
+  clearTimeout(projNoteTimer);if(!projNoteDirty)return;projNoteDirty=false;
+  const p=getProj(activeProjectId);if(!p)return;
+  setSave('ukladám...','busy');
+  try{await updateProject(p);setSave('uložené ✓','ok');}
+  catch(e){setSave('neuložené!','');toast('Poznámky neuložené: '+shortErr(e));}
+}
+async function copyNotesSql(){try{await navigator.clipboard.writeText(SQL_NOTES);toast('SQL skopírovaný – vlož ho v Supabase a obnov stránku');}catch(e){toast('Skopíruj SQL ručne');}}
+async function copyGroupsSql(){try{await navigator.clipboard.writeText(SQL_GROUPS);toast('SQL skopírovaný – vlož ho v Supabase a obnov stránku');}catch(e){toast('Skopíruj SQL ručne');}}
+
+// ── EXPORT PROJECT AS MARKDOWN (ChatGPT / Obsidian) ──
+function projectMarkdown(p){
+  const L=['# '+p.label];
+  if(p.start_date||p.end_date)L.push('*'+(p.start_date?fmtDate(p.start_date):'…')+' – '+(p.end_date?fmtDate(p.end_date):'…')+'*');
+  const pr=projProgress(p.id);
+  L.push('','**Postup:** '+pr.done+'/'+pr.total+' hotových ('+pr.pct+'%)');
+  if(p.description)L.push('',''+p.description);
+  const ns=(p.notes||[]).filter(n=>(n.title&&n.title.trim())||(n.body&&n.body.trim()));
+  if(hasProjNotes&&ns.length){
+    L.push('','## Poznámky');
+    ns.forEach(n=>{L.push('','### '+(n.title||'Bez názvu'));if(n.body&&n.body.trim())L.push('',n.body.trim());});
+  }
+  L.push('','## Úlohy a eventy');
+  let any=false;
+  KANBAN.forEach(col=>{
+    const its=projItems(p.id).filter(t=>statusOf(t)===col.id);
+    if(!its.length)return;any=true;
+    L.push('','### '+col.label);
+    its.forEach(t=>{
+      const box=t.done?'[x]':'[ ]';
+      const kind=t.type==='event'?'📅 ':'';
+      const when=t.date?' ('+fmtDate(t.date)+(t.time_start?' '+t.time_start:'')+')':'';
+      L.push('- '+box+' '+kind+t.text+when);
+    });
+  });
+  if(!any)L.push('','_(zatiaľ žiadne položky)_');
+  return L.join('\n');
+}
+async function copyProjectMd(id){
+  const p=getProj(id);if(!p)return;
+  if(projNoteDirty)await flushProjNote();
+  try{await navigator.clipboard.writeText(projectMarkdown(p));toast('Projekt skopírovaný ako Markdown – vlož do Obsidianu / ChatGPT');}
+  catch(e){toast('Nepodarilo sa skopírovať');}
+}
+
+function kanCard(t){
+  const isEv=t.type==='event',c=getCat(t.cat);
+  const accent=isEv?eventColor(t):(c.color||'#888');
+  const when=t.date?fmtDate(t.date):'📥 inbox';
+  const icon=isEv?'📅':esc(c.icon||'•');
+  return `<div class="kan-card${t.done?' done':''}" draggable="true" ondragstart="kanDrag(event,${t.id})" ondragend="kanDragEnd(event)" onclick="openDrawer(${t.id})" style="--ac:${accent}">
+    <div class="kan-card-txt">${icon} ${esc(t.text)}</div>
+    <div class="kan-card-meta">${isEv?'Event':esc(c.label)} · ${when}</div></div>`;
+}
+function kanDrag(e,id){boardDragId=id;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',String(id));}catch(_){}}
+function kanDragEnd(e){boardDragId=null;document.querySelectorAll('.kan-col.over').forEach(c=>c.classList.remove('over'));}
+function kanOver(e){e.preventDefault();e.currentTarget.classList.add('over');}
+function kanLeave(e){if(e.currentTarget===e.target)e.currentTarget.classList.remove('over');}
+async function kanDrop(e,status){
+  e.preventDefault();e.currentTarget.classList.remove('over');
+  const id=boardDragId!=null?boardDragId:Number(e.dataTransfer.getData('text/plain'));
+  boardDragId=null;
+  const t=items.find(x=>x.id===id);if(!t)return;
+  if(statusOf(t)===status)return;
+  const backup={status:t.status,done:t.done};
+  t.status=status;t.done=(status==='done');
+  renderCampaigns();
+  if(!(await persist(t))){t.status=backup.status;t.done=backup.done;renderCampaigns();}
+}
+function addToCampaign(pid,status){imPresetProj=pid;imPresetStatus=status;openItemModal();}
+
+// ── CONTENT PLANNING BOARD (Obsah) ──
+function allContentItems(){return items.filter(t=>t.type==='content');}
+function contentItems(){
+  let its=allContentItems();
+  if(contentProjFilter)its=its.filter(t=>String(t.project_id)===String(contentProjFilter));
+  return its;
+}
+function renderContent(){
+  const el=document.getElementById('view-content');
+  if(!hasContentCols){el.innerHTML=contentSetupHTML();return;}
+  const projOpts='<option value="">Všetky projekty</option>'+projects.map(p=>`<option value="${p.id}"${String(contentProjFilter)===String(p.id)?' selected':''}>${esc(p.label)}</option>`).join('');
+  const projFilter=hasItemProjectCols&&projects.length?`<select class="content-filter" onchange="setContentProjFilter(this.value)">${projOpts}</select>`:'';
+  let h=`<div class="content-wrap">
+    <div class="content-head">
+      <h2>📸 Obsah</h2>
+      <div class="content-head-acts">${projFilter}
+        <button class="hbtn pri" onclick="addContentItem('idea')">+ Nový obsah</button>
+      </div>
+    </div>
+    <p class="content-intro">Plánuj posty, reels a stories – od nápadu po publikáciu. Potiahni kartu medzi stĺpcami podľa toho, ako napreduje.</p>
+    <div class="kanban content-board">`;
+  CONTENT_STAGES.forEach(col=>{
+    const colItems=contentItems().filter(t=>contentStatusOf(t)===col.id);
+    h+=`<div class="kan-col" style="--cc:${col.c}" ondragover="cOver(event)" ondragleave="cLeave(event)" ondrop="cDrop(event,'${col.id}')">
+      <div class="kan-colhdr"><span>${col.label}</span><span class="kan-count">${colItems.length}</span></div>
+      <div class="kan-body">`;
+    colItems.forEach(t=>{h+=contentCard(t);});
+    h+=`<button class="kan-add" onclick="addContentItem('${col.id}')">+ Pridať</button></div></div>`;
+  });
+  h+=`</div></div>`;
+  el.innerHTML=h;
+}
+function contentSetupHTML(){
+  return `<div class="camp-setup">
+    <div class="camp-setup-ic">📸</div>
+    <h2>Obsahové plánovanie</h2>
+    <p>Tu si naplánuješ posty a obsah s vlastným stavom (Nápad → V procese → Pripravené → Publikované), odkazom na Google Drive a textom.</p>
+    <p>Najprv treba <b>raz</b> spustiť krátky SQL príkaz v Supabase (pridá 3 nové stĺpce). Poslala som ti ho aj v chate.</p>
+    <button class="hbtn pri" onclick="copyContentSql()">📋 Skopírovať SQL</button>
+    <p class="camp-setup-steps">Potom: Supabase → <b>SQL Editor</b> → vlož → <b>Run</b> → vráť sa sem a obnov stránku (Ctrl+Shift+R).</p>
+  </div>`;
+}
+function contentCard(t){
+  const c=getCat(t.cat);
+  const proj=t.project_id!=null?getProj(t.project_id):null;
+  const when=t.date?`📅 ${fmtDate(t.date)}`:'';
+  const drive=t.drive_link?`<a class="content-drive" href="${esc(t.drive_link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Otvoriť Google Drive">🔗 Drive</a>`:'';
+  const projTag=proj?`<span class="content-proj" style="--pc:${proj.color}">${esc(proj.label)}</span>`:'';
+  const ts=textStatusOf(t);
+  const tsTag=(hasTextStatus&&ts)?`<span class="content-tstatus" style="--tc:${textStageColor(ts)}">${esc(textStageLabel(ts))}</span>`:'';
+  const txt=t.content_text?`<div class="content-card-text">${esc(t.content_text.slice(0,120))}${t.content_text.length>120?'…':''}</div>`:'';
+  const meta=[c.icon?esc(c.icon)+' '+esc(c.label):'',when].filter(Boolean).join(' · ');
+  return `<div class="kan-card content-card" draggable="true" ondragstart="cDrag(event,${t.id})" ondragend="cDragEnd(event)" onclick="openDrawer(${t.id})" style="--ac:${c.color||'#888'}">
+    <div class="kan-card-txt">${esc(t.text)}</div>
+    ${meta?`<div class="kan-card-meta">${meta}</div>`:''}
+    ${txt}
+    <div class="content-card-foot">${projTag}${tsTag}${drive}</div></div>`;
+}
+function cDrag(e,id){contentDragId=id;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',String(id));}catch(_){}}
+function cDragEnd(e){contentDragId=null;document.querySelectorAll('.content-board .kan-col.over').forEach(c=>c.classList.remove('over'));}
+function cOver(e){e.preventDefault();e.currentTarget.classList.add('over');}
+function cLeave(e){if(e.currentTarget===e.target)e.currentTarget.classList.remove('over');}
+async function cDrop(e,status){
+  e.preventDefault();e.currentTarget.classList.remove('over');
+  const id=contentDragId!=null?contentDragId:Number(e.dataTransfer.getData('text/plain'));
+  contentDragId=null;
+  const t=items.find(x=>x.id===id);if(!t)return;
+  if(contentStatusOf(t)===status)return;
+  const backup=t.content_status;
+  t.content_status=status;
+  renderContent();
+  if(!(await persist(t))){t.content_status=backup;renderContent();}
+}
+function setContentProjFilter(v){contentProjFilter=v;renderContent();}
+function addContentItem(status){imPresetType='content';imPresetContentStatus=status;if(contentProjFilter)imPresetProj=Number(contentProjFilter);openItemModal();}
+async function copyContentSql(){try{await navigator.clipboard.writeText(SQL_CONTENT);toast('SQL skopírovaný – vlož ho v Supabase a obnov stránku');}catch(e){toast('Skopíruj SQL ručne');}}
+
+// ── CAMPAIGN EDITOR MODAL ──
+function openProjModal(id){
+  editingProjId=id!=null?id:null;
+  const p=id!=null?getProj(id):null;
+  document.getElementById('pm-title').textContent=p?'Upraviť projekt':'Nový projekt';
+  document.getElementById('pm-label').value=p?p.label:'';
+  document.getElementById('pm-color').value=p?(p.color||'#2E6B3A'):PALETTE[Math.floor(Math.random()*PALETTE.length)].h;
+  document.getElementById('pm-desc').value=p?(p.description||''):'';
+  document.getElementById('pm-start').value=p?(p.start_date||''):'';
+  document.getElementById('pm-end').value=p?(p.end_date||''):'';
+  document.getElementById('pm-group-wrap').style.display=hasProjGroups?'':'none';
+  populateGroupList();
+  document.getElementById('pm-group').value=p?(p.grp||''):'';
+  document.getElementById('pm-del').style.display=p?'block':'none';
+  document.getElementById('pm-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('pm-label').focus(),60);
+}
+function populateGroupList(){
+  const groups=[...new Set(projects.map(p=>(p.grp||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'sk'));
+  document.getElementById('pm-group-list').innerHTML=groups.map(g=>`<option value="${esc(g)}"></option>`).join('');
+}
+function closeProjModal(){document.getElementById('pm-overlay').classList.remove('open');editingProjId=null;}
+async function saveProjModal(){
+  const label=document.getElementById('pm-label').value.trim();
+  if(!label){document.getElementById('pm-label').focus();return;}
+  const data={label,color:document.getElementById('pm-color').value,
+    description:document.getElementById('pm-desc').value.trim(),
+    grp:document.getElementById('pm-group').value.trim(),
+    start_date:document.getElementById('pm-start').value||null,
+    end_date:document.getElementById('pm-end').value||null};
+  if(editingProjId!=null){
+    const p=getProj(editingProjId);if(!p){closeProjModal();return;}
+    const backup={...p};Object.assign(p,data);
+    closeProjModal();renderCampaigns();setSave('ukladám...','busy');
+    try{await updateProject(p);setSave('uložené ✓','ok');toast('Projekt uložený');}
+    catch(e){Object.assign(p,backup);renderCampaigns();setSave('neuložené!','');toast('Neuložené: '+shortErr(e));}
+  }else{
+    const p={id:genId(),...data,sort_order:projects.length,notes:[]};
+    projects.push(p);closeProjModal();activeProjectId=p.id;renderCampaigns();setSave('ukladám...','busy');
+    try{await saveNewProject(p);setSave('uložené ✓','ok');toast('Projekt vytvorený');}
+    catch(e){projects=projects.filter(x=>x!==p);activeProjectId=null;renderCampaigns();setSave('neuložené!','');toast('Neuložené: '+shortErr(e));}
+  }
+}
+async function delProjEditing(){
+  if(editingProjId==null)return;
+  const p=getProj(editingProjId);if(!p)return;
+  if(!confirm(`Zmazať projekt „${p.label}"? Úlohy a eventy ostanú zachované, len sa odpoja od projektu.`))return;
+  const id=editingProjId;closeProjModal();
+  const backupProjects=[...projects];
+  const itemBackups=projItems(id).map(t=>({t,pid:t.project_id}));
+  projects=projects.filter(x=>x.id!==id);
+  items.forEach(t=>{if(t.project_id===id)t.project_id=null;});
+  if(activeProjectId===id)activeProjectId=null;
+  renderAll();setSave('ukladám...','busy');
+  try{await deleteProjectDB(id);setSave('uložené ✓','ok');toast('Projekt zmazaný');}
+  catch(e){projects=backupProjects;itemBackups.forEach(b=>b.t.project_id=b.pid);renderAll();setSave('neuložené!','');toast('Neuložené: '+shortErr(e));}
+}
+
+// ── RESET ──
+async function doReset(){
+  if(!confirm('Zmazať všetky dáta a obnoviť predvolené?'))return;
+  showLoading('Obnovujem...');
+  try{
+    await sbFetch(`/rest/v1/items?user_id=eq.${uid()}`,{method:'DELETE'});
+    await sbFetch(`/rest/v1/calendars?user_id=eq.${uid()}`,{method:'DELETE'});
+    await sbFetch(`/rest/v1/categories?user_id=eq.${uid()}`,{method:'DELETE'});
+    await sbFetch(`/rest/v1/inbox_lists?user_id=eq.${uid()}`,{method:'DELETE'});
+    if(hasProjects){try{await sbFetch(`/rest/v1/projects?user_id=eq.${uid()}`,{method:'DELETE'});}catch(e){}}
+    items=[];projects=[];activeProjectId=null;cats=JSON.parse(JSON.stringify(DEFAULT_CATS));calendars=JSON.parse(JSON.stringify(DEFAULT_CALENDARS));inboxLists=JSON.parse(JSON.stringify(DEFAULT_LISTS));
+    await seedDefaults();await loadFromDB();applyCatStyles();renderAll();hideLoading();toast('Obnovené');
+  }catch(e){hideLoading();alert('Chyba: '+e.message);}
+}
+
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
+
+['item-overlay','fe-overlay','cm-overlay','lm-overlay','pm-overlay'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){
+  const open=['item-overlay','fe-overlay','cm-overlay','lm-overlay','pm-overlay'].filter(id=>document.getElementById(id).classList.contains('open'));
+  if(open.length)open.forEach(id=>document.getElementById(id).classList.remove('open'));
+  else if(drawerId!==null)closeDrawer();
+}});
+window.addEventListener('beforeunload',()=>{if(descDirty)flushDesc();if(projNoteDirty)flushProjNote();});
+// klik na [[odkaz]] v náhľade poznámky
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('.wikilink[data-wl]');if(a){e.preventDefault();openNoteByTitle(a.dataset.wl);}});
+
+(async()=>{
+  showLoading('Overujem prihlásenie...');
+  const ok=await tryRestoreSession();
+  if(ok===true){await initApp();}
+  else if(ok===false){hideLoading();document.getElementById('auth-screen').classList.add('show');}
+})();
+</script>
+</body>
+</html>
